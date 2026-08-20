@@ -1,198 +1,163 @@
-import React, { useState, useEffect } from "react";
-import { useLocation } from "react-router-dom";
-import { base44 } from "@/api/base44Client";
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { 
-  ArrowLeft, 
-  ExternalLink, 
-  CheckCircle, 
-  Code, 
-  Users,
-  ArrowRight,
-  Target
-} from "lucide-react";
-import { Link } from "react-router-dom";
-import ParallaxSection from "../components/common/ParallaxSection";
+import { useEffect, useState } from 'react';
+import { Link, useLocation, useParams } from 'react-router-dom';
+import { ArrowLeft, ArrowRight, ExternalLink, CheckCircle, Target, Code, Users } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { api } from '@/lib/api';
+import { fadeUp, stagger, revealOnce } from '@/lib/motion';
 
 export default function ProductDetail() {
+  const { slug: routeSlug } = useParams();
   const location = useLocation();
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    loadProduct();
-  }, [location]);
+    const params = new URLSearchParams(location.search);
+    const identifier = routeSlug || params.get('slug') || params.get('id');
+    if (!identifier) { setLoading(false); return; }
+    api.products.get(identifier)
+      .then((p) => setProduct(p))
+      .catch((e) => setError(e.message))
+      .finally(() => setLoading(false));
+  }, [routeSlug, location.search]);
 
-  const loadProduct = async () => {
-    try {
-      const urlParams = new URLSearchParams(location.search);
-      const identifier = urlParams.get('id') || urlParams.get('slug');
-      
-      if (!identifier) {
-        setLoading(false);
-        return;
-      }
+  if (loading) return <Loading />;
+  if (!product) return <NotFound />;
 
-      let results = await base44.entities.Product.filter({ slug: identifier });
-      
-      if (results.length === 0) {
-        const allProducts = await base44.entities.Product.list();
-        results = allProducts.filter(p => p.id === identifier);
-      }
-
-      if (results.length > 0) {
-        setProduct(results[0]);
-      }
-    } catch (error) {
-      console.error("Error loading product:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-teal-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading product...</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (!product) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">Product Not Found</h2>
-          <p className="text-gray-600 mb-8">The product you're looking for doesn't exist.</p>
-          <Link to="/products">
-            <Button>
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Back to Products
-            </Button>
-          </Link>
-        </div>
-      </div>
-    );
-  }
+  const hero = product.screenshot_urls?.[0] || product.image_url || 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=1600&q=80';
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Hero Section */}
-      <ParallaxSection imageUrl={product.screenshot_urls?.[0] || "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=1200"}>
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-32">
-          <Link to="/products">
-            <Button variant="outline" className="mb-6 bg-white">
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Back to Products
-            </Button>
+    <>
+      {/* Hero */}
+      <section className="relative overflow-hidden bg-brand-radial text-white">
+        <div className="hero-grid absolute inset-0" />
+        <div className="absolute inset-0 bg-cover bg-center opacity-25 mix-blend-luminosity" style={{ backgroundImage: `url(${hero})` }} />
+        <div className="container-page relative py-24 md:py-32">
+          <Link to="/products" className="inline-flex items-center gap-1 text-white/70 hover:text-white text-sm mb-6">
+            <ArrowLeft className="w-4 h-4" /> Back to products
           </Link>
-          <h1 className="text-5xl md:text-6xl font-bold text-white mb-6">
-            {product.name}
-          </h1>
-          <p className="text-xl text-gray-200 max-w-3xl mb-8">
-            {product.short_description}
-          </p>
-          {product.demo_url && (
-            <a href={product.demo_url} target="_blank" rel="noopener noreferrer">
-              <Button size="lg" className="bg-teal-500 hover:bg-teal-600 text-white">
-                Try Live Demo
-                <ExternalLink className="ml-2 w-5 h-5" />
-              </Button>
-            </a>
-          )}
+          <motion.div variants={stagger()} initial="hidden" animate="show" className="max-w-3xl">
+            {product.category && (
+              <motion.div variants={fadeUp}>
+                <Badge className="bg-white/15 text-white border border-white/20 mb-4">{product.category}</Badge>
+              </motion.div>
+            )}
+            <motion.h1 variants={fadeUp} className="font-display text-5xl md:text-6xl font-bold leading-tight">
+              {product.name}
+            </motion.h1>
+            <motion.p variants={fadeUp} className="mt-5 text-lg md:text-xl text-white/80 max-w-2xl">
+              {product.short_description}
+            </motion.p>
+            <motion.div variants={fadeUp} className="mt-8 flex gap-3 flex-wrap">
+              {product.demo_url && (
+                <a href={product.demo_url} target="_blank" rel="noopener noreferrer">
+                  <Button size="lg" className="bg-leaf-500 hover:bg-leaf-600 text-white font-semibold shadow-glow-green">
+                    Try live demo <ExternalLink className="ml-2 w-5 h-5" />
+                  </Button>
+                </a>
+              )}
+              <Link to="/contact">
+                <Button size="lg" variant="outline" className="border-white/30 text-white bg-white/5 hover:bg-white/10">
+                  Talk to sales
+                </Button>
+              </Link>
+            </motion.div>
+          </motion.div>
         </div>
-      </ParallaxSection>
+      </section>
 
-      {/* Key Benefit */}
       {product.primary_benefit && (
-        <section className="py-16 bg-teal-600 text-white">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <Target className="w-12 h-12 mx-auto mb-4" />
-            <h2 className="text-3xl font-bold mb-4">Primary Benefit</h2>
-            <p className="text-xl text-teal-100 max-w-3xl mx-auto">
-              {product.primary_benefit}
-            </p>
+        <section className="py-14 bg-gradient-to-r from-brand-800 to-leaf-700 text-white">
+          <div className="container-page text-center">
+            <Target className="w-10 h-10 mx-auto mb-3 opacity-80" />
+            <h2 className="font-display text-2xl md:text-3xl font-bold">Primary benefit</h2>
+            <p className="mt-3 text-lg text-white/85 max-w-2xl mx-auto">{product.primary_benefit}</p>
           </div>
         </section>
       )}
 
-      {/* Detailed Description */}
       {product.detailed_description && (
-        <section className="py-20 bg-white">
-          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-            <h2 className="text-3xl font-bold text-gray-900 mb-6">About This Product</h2>
-            <div className="prose prose-lg max-w-none text-gray-700">
-              {product.detailed_description.split('\n').map((paragraph, idx) => (
-                <p key={idx} className="mb-4">{paragraph}</p>
-              ))}
+        <section className="section bg-white">
+          <div className="container-page max-w-4xl">
+            <p className="eyebrow">About the product</p>
+            <h2 className="h-section mt-3 mb-6">What it does.</h2>
+            <div className="text-slate-700 leading-relaxed text-lg space-y-4">
+              {product.detailed_description.split('\n').filter(Boolean).map((p, i) => <p key={i}>{p}</p>)}
             </div>
           </div>
         </section>
       )}
 
-      {/* Features */}
-      {product.features && product.features.length > 0 && (
-        <section className="py-20 bg-gray-50">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <h2 className="text-3xl font-bold text-gray-900 mb-12 text-center">Key Features</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {product.features.map((feature, index) => (
-                <Card key={index}>
-                  <CardContent className="pt-6">
-                    <CheckCircle className="w-8 h-8 text-teal-600 mb-3" />
-                    <p className="text-gray-700">{feature}</p>
-                  </CardContent>
-                </Card>
-              ))}
+      {product.features?.length > 0 && (
+        <section className="section bg-slate-50/60">
+          <div className="container-page">
+            <div className="text-center max-w-2xl mx-auto mb-12">
+              <p className="eyebrow">Features</p>
+              <h2 className="h-section mt-3">What you get out of the box.</h2>
             </div>
+            <motion.div variants={stagger()} {...revealOnce} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {product.features.map((f, i) => (
+                <motion.div key={i} variants={fadeUp}>
+                  <Card className="lift border border-slate-200 h-full">
+                    <CardContent className="p-5 flex items-start gap-3">
+                      <CheckCircle className="w-6 h-6 text-leaf-600 flex-shrink-0 mt-0.5" />
+                      <p className="text-slate-700">{f}</p>
+                    </CardContent>
+                  </Card>
+                </motion.div>
+              ))}
+            </motion.div>
           </div>
         </section>
       )}
 
-      {/* Use Cases */}
-      {product.use_cases && product.use_cases.length > 0 && (
-        <section className="py-20 bg-white">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <h2 className="text-3xl font-bold text-gray-900 mb-12 text-center">Use Cases</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              {product.use_cases.map((useCase, index) => (
-                <Card key={index} className="hover:shadow-lg transition-shadow">
-                  <CardContent className="pt-6">
-                    <div className="flex items-start">
-                      <div className="w-10 h-10 bg-teal-100 rounded-lg flex items-center justify-center mr-4 flex-shrink-0">
-                        <Users className="w-5 h-5 text-teal-600" />
+      {product.use_cases?.length > 0 && (
+        <section className="section bg-white">
+          <div className="container-page">
+            <div className="text-center max-w-2xl mx-auto mb-12">
+              <p className="eyebrow">Use cases</p>
+              <h2 className="h-section mt-3">Who uses it.</h2>
+            </div>
+            <motion.div variants={stagger()} {...revealOnce} className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {product.use_cases.map((u, i) => (
+                <motion.div key={i} variants={fadeUp}>
+                  <Card className="lift border border-slate-200 h-full">
+                    <CardContent className="p-6 flex items-start gap-4">
+                      <div className="w-10 h-10 rounded-xl bg-brand-50 text-brand-700 flex items-center justify-center flex-shrink-0">
+                        <Users className="w-5 h-5" />
                       </div>
-                      <p className="text-gray-700">{useCase}</p>
-                    </div>
-                  </CardContent>
-                </Card>
+                      <p className="text-slate-700 leading-relaxed">{u}</p>
+                    </CardContent>
+                  </Card>
+                </motion.div>
               ))}
-            </div>
+            </motion.div>
           </div>
         </section>
       )}
 
-      {/* Tech Stack */}
-      {product.tech_stack && product.tech_stack.length > 0 && (
-        <section className="py-20 bg-gray-50">
-          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-            <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">Technology Stack</h2>
-            <Card>
-              <CardContent className="pt-6">
-                <div className="flex items-center mb-4">
-                  <Code className="w-6 h-6 text-teal-600 mr-2" />
-                  <h3 className="text-lg font-semibold">Built With</h3>
+      {product.tech_stack?.length > 0 && (
+        <section className="section bg-slate-50/60">
+          <div className="container-page max-w-4xl">
+            <div className="text-center mb-8">
+              <p className="eyebrow">Under the hood</p>
+              <h2 className="h-section mt-3">Technology stack.</h2>
+            </div>
+            <Card className="border border-slate-200">
+              <CardContent className="p-6">
+                <div className="flex items-center gap-2 mb-4 text-brand-700">
+                  <Code className="w-5 h-5" />
+                  <h3 className="font-semibold">Built with</h3>
                 </div>
                 <div className="flex flex-wrap gap-2">
-                  {product.tech_stack.map((tech, index) => (
-                    <Badge key={index} variant="secondary" className="text-sm">
-                      {tech}
-                    </Badge>
+                  {product.tech_stack.map((t, i) => (
+                    <span key={i} className="text-sm font-medium text-brand-800 bg-brand-50 rounded-full px-3 py-1">
+                      {t}
+                    </span>
                   ))}
                 </div>
               </CardContent>
@@ -201,19 +166,17 @@ export default function ProductDetail() {
         </section>
       )}
 
-      {/* Screenshots */}
-      {product.screenshot_urls && product.screenshot_urls.length > 1 && (
-        <section className="py-20 bg-white">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <h2 className="text-3xl font-bold text-gray-900 mb-12 text-center">Product Screenshots</h2>
+      {product.screenshot_urls?.length > 1 && (
+        <section className="section bg-white">
+          <div className="container-page">
+            <div className="text-center mb-10">
+              <p className="eyebrow">Product screenshots</p>
+              <h2 className="h-section mt-3">See it in action.</h2>
+            </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {product.screenshot_urls.map((url, index) => (
-                <div key={index} className="rounded-lg overflow-hidden shadow-lg">
-                  <img
-                    src={url}
-                    alt={`${product.name} screenshot ${index + 1}`}
-                    className="w-full h-auto"
-                  />
+              {product.screenshot_urls.map((url, i) => (
+                <div key={i} className="rounded-2xl overflow-hidden shadow-glow ring-1 ring-brand-100">
+                  <img src={url} alt={`${product.name} screenshot ${i + 1}`} className="w-full h-auto object-cover" loading="lazy" />
                 </div>
               ))}
             </div>
@@ -221,31 +184,48 @@ export default function ProductDetail() {
         </section>
       )}
 
-      {/* CTA Section */}
-      <section className="py-20 bg-gradient-to-r from-teal-600 to-blue-600 text-white">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-4xl font-bold mb-6">Ready to Get Started?</h2>
-          <p className="text-xl text-teal-100 mb-8">
-            Contact us to learn more about how {product.name} can benefit your organization
+      <section className="relative overflow-hidden bg-brand-radial text-white">
+        <div className="hero-grid absolute inset-0 opacity-40" />
+        <div className="container-page relative py-20 text-center">
+          <h2 className="font-display text-3xl md:text-4xl font-bold">Ready to get started?</h2>
+          <p className="mt-4 text-white/70 max-w-xl mx-auto">
+            Book a scoping call with our team to see how {product.name} fits your organisation.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          <div className="mt-8 flex flex-wrap gap-3 justify-center">
             {product.demo_url && (
               <a href={product.demo_url} target="_blank" rel="noopener noreferrer">
-                <Button size="lg" className="bg-white text-teal-600 hover:bg-gray-100">
-                  Try Demo
-                  <ExternalLink className="ml-2 w-5 h-5" />
+                <Button size="lg" className="bg-white text-brand-900 hover:bg-white/90 font-semibold">
+                  Try demo <ExternalLink className="ml-2 w-5 h-5" />
                 </Button>
               </a>
             )}
             <Link to="/contact">
-              <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-teal-600">
-                Contact Sales
-                <ArrowRight className="ml-2 w-5 h-5" />
+              <Button size="lg" variant="outline" className="border-white/30 text-white bg-white/5 hover:bg-white/10">
+                Contact sales <ArrowRight className="ml-2 w-5 h-5" />
               </Button>
             </Link>
           </div>
         </div>
       </section>
+    </>
+  );
+}
+
+function Loading() {
+  return (
+    <div className="min-h-[60vh] flex items-center justify-center">
+      <div className="w-10 h-10 rounded-full border-4 border-brand-200 border-t-brand-700 animate-spin" />
+    </div>
+  );
+}
+function NotFound() {
+  return (
+    <div className="min-h-[60vh] flex flex-col items-center justify-center text-center">
+      <h2 className="h-section">Product not found</h2>
+      <p className="text-slate-500 mt-2">The product you're looking for doesn't exist or is no longer available.</p>
+      <Link to="/products" className="mt-6 inline-block">
+        <Button><ArrowLeft className="w-4 h-4 mr-2" /> Back to products</Button>
+      </Link>
     </div>
   );
 }

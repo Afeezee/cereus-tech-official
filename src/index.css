@@ -5,84 +5,192 @@
 @layer base {
   :root {
     --background: 0 0% 100%;
-    --foreground: 0 0% 3.9%;
+    --foreground: 260 30% 12%;
     --card: 0 0% 100%;
-    --card-foreground: 0 0% 3.9%;
+    --card-foreground: 260 30% 12%;
     --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 3.9%;
-    --primary: 0 0% 9%;
-    --primary-foreground: 0 0% 98%;
-    --secondary: 0 0% 96.1%;
-    --secondary-foreground: 0 0% 9%;
-    --muted: 0 0% 96.1%;
-    --muted-foreground: 0 0% 45.1%;
-    --accent: 0 0% 96.1%;
-    --accent-foreground: 0 0% 9%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 0 0% 89.8%;
-    --input: 0 0% 89.8%;
-    --ring: 0 0% 3.9%;
-    --chart-1: 12 76% 61%;
-    --chart-2: 173 58% 39%;
-    --chart-3: 197 37% 24%;
-    --chart-4: 43 74% 66%;
-    --chart-5: 27 87% 67%;
-    --radius: 0.5rem;
-    --sidebar-background: 0 0% 98%;
-    --sidebar-foreground: 240 5.3% 26.1%;
-    --sidebar-primary: 240 5.9% 10%;
-    --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 240 4.8% 95.9%;
-    --sidebar-accent-foreground: 240 5.9% 10%;
-    --sidebar-border: 220 13% 91%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --popover-foreground: 260 30% 12%;
+
+    /* brand primary = purple 700 */
+    --primary: 262 60% 30%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 260 25% 96%;
+    --secondary-foreground: 260 40% 20%;
+
+    --muted: 260 20% 96%;
+    --muted-foreground: 260 12% 42%;
+
+    --accent: 148 60% 36%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 84% 55%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 260 20% 90%;
+    --input: 260 20% 90%;
+    --ring: 262 60% 45%;
+
+    --radius: 0.75rem;
   }
 
-  .dark {
-    --background: 0 0% 3.9%;
-    --foreground: 0 0% 98%;
-    --card: 0 0% 3.9%;
-    --card-foreground: 0 0% 98%;
-    --popover: 0 0% 3.9%;
-    --popover-foreground: 0 0% 98%;
-    --primary: 0 0% 98%;
-    --primary-foreground: 0 0% 9%;
-    --secondary: 0 0% 14.9%;
-    --secondary-foreground: 0 0% 98%;
-    --muted: 0 0% 14.9%;
-    --muted-foreground: 0 0% 63.9%;
-    --accent: 0 0% 14.9%;
-    --accent-foreground: 0 0% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 0 0% 14.9%;
-    --input: 0 0% 14.9%;
-    --ring: 0 0% 83.1%;
-    --chart-1: 220 70% 50%;
-    --chart-2: 160 60% 45%;
-    --chart-3: 30 80% 55%;
-    --chart-4: 280 65% 60%;
-    --chart-5: 340 75% 55%;
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
-  }
-}
-
-
-
-@layer base {
   * {
-    @apply border-border outline-ring/50;
+    @apply border-border;
+  }
+
+  html {
+    scroll-behavior: smooth;
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-sans antialiased;
+    font-feature-settings: 'cv02','cv03','cv04','cv11';
+  }
+
+  h1, h2, h3, h4 {
+    @apply font-display tracking-tight;
+  }
+
+  ::selection {
+    background: theme('colors.brand.700');
+    color: white;
+  }
+
+  /* nicer scrollbars */
+  ::-webkit-scrollbar { width: 10px; height: 10px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, theme('colors.brand.400'), theme('colors.brand.700'));
+    border-radius: 8px;
+    border: 2px solid white;
+  }
+}
+
+@layer components {
+  /* generic container used across every page for horizontal rhythm */
+  .container-page {
+    @apply mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8;
+  }
+
+  /* section vertical rhythm */
+  .section {
+    @apply py-20 md:py-24;
+  }
+  .section-sm {
+    @apply py-14 md:py-16;
+  }
+
+  /* eyebrow tag above headings */
+  .eyebrow {
+    @apply inline-flex items-center gap-2 rounded-full border border-brand-200 bg-brand-50 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-brand-700;
+  }
+
+  /* section headline styles */
+  .h-display {
+    @apply font-display text-4xl md:text-5xl font-bold tracking-tight text-brand-900;
+  }
+  .h-section {
+    @apply font-display text-3xl md:text-4xl font-bold tracking-tight text-brand-900;
+  }
+
+  /* body lead paragraph */
+  .lead {
+    @apply text-lg md:text-xl text-slate-600 leading-relaxed;
+  }
+
+  /* glass card used across surfaces */
+  .glass {
+    @apply rounded-2xl border border-white/60 bg-white/70 backdrop-blur-xl shadow-card;
+  }
+
+  /* card lift hover */
+  .lift {
+    @apply transition-all duration-300 will-change-transform hover:-translate-y-1 hover:shadow-glow;
+  }
+
+  /* gradient text */
+  .text-gradient {
+    background: linear-gradient(90deg, theme('colors.brand.700'), theme('colors.leaf.600'));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  /* dark hero shell */
+  .hero-shell {
+    @apply relative overflow-hidden bg-brand-radial text-white;
+  }
+
+  /* subtle animated grid overlay */
+  .hero-grid::before {
+    content: '';
+    position: absolute; inset: 0;
+    background-image: linear-gradient(rgba(255,255,255,0.06) 1px, transparent 1px),
+                      linear-gradient(90deg, rgba(255,255,255,0.06) 1px, transparent 1px);
+    background-size: 44px 44px;
+    mask-image: radial-gradient(ellipse at center, black 30%, transparent 75%);
+    -webkit-mask-image: radial-gradient(ellipse at center, black 30%, transparent 75%);
+    pointer-events: none;
+  }
+
+  /* blob */
+  .blob {
+    position: absolute;
+    filter: blur(70px);
+    opacity: 0.5;
+    border-radius: 9999px;
+    pointer-events: none;
+  }
+
+  /* underline link */
+  .link-underline {
+    @apply relative inline-block;
+  }
+  .link-underline::after {
+    content: '';
+    @apply absolute left-0 -bottom-0.5 h-0.5 w-0 bg-current transition-all duration-300;
+  }
+  .link-underline:hover::after { @apply w-full; }
+
+  /* Markdown article body — hand-rolled so we don't depend on
+     @tailwindcss/typography. Keep spacing generous and readable. */
+  .prose-brand {
+    @apply max-w-none text-slate-700 leading-relaxed;
+  }
+  .prose-brand > * + * { @apply mt-4; }
+  .prose-brand h1 { @apply font-display text-brand-900 text-3xl md:text-4xl font-bold mt-10 mb-3; }
+  .prose-brand h2 { @apply font-display text-brand-900 text-2xl md:text-3xl font-bold mt-10 mb-3; }
+  .prose-brand h3 { @apply font-display text-brand-900 text-xl md:text-2xl font-semibold mt-8 mb-2; }
+  .prose-brand h4 { @apply font-display text-brand-900 text-lg font-semibold mt-6 mb-2; }
+  .prose-brand p  { @apply text-slate-700 leading-relaxed; }
+  .prose-brand a  {
+    @apply text-brand-700 hover:text-brand-900 underline decoration-brand-300 underline-offset-2;
+  }
+  .prose-brand strong { @apply text-brand-900 font-semibold; }
+  .prose-brand em     { @apply italic; }
+  .prose-brand ul     { @apply list-disc pl-6 space-y-2; }
+  .prose-brand ol     { @apply list-decimal pl-6 space-y-2; }
+  .prose-brand li     { @apply text-slate-700; }
+  .prose-brand blockquote {
+    @apply border-l-4 border-leaf-500 bg-leaf-50/60 not-italic text-slate-700 rounded-r-lg py-3 px-4 my-6;
+  }
+  .prose-brand code {
+    @apply bg-brand-50 text-brand-800 rounded px-1.5 py-0.5 text-[0.9em];
+  }
+  .prose-brand pre {
+    @apply bg-brand-950 text-brand-50 rounded-lg p-4 overflow-x-auto text-sm my-6;
+  }
+  .prose-brand pre code { @apply bg-transparent text-inherit p-0; }
+  .prose-brand img { @apply rounded-xl shadow-card my-6; }
+  .prose-brand hr  { @apply my-10 border-slate-200; }
+}
+
+@layer utilities {
+  .no-scrollbar::-webkit-scrollbar { display: none; }
+  .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+  /* text stroke helper (used sparingly) */
+  .text-stroke-white {
+    -webkit-text-stroke: 1px rgba(255,255,255,0.4);
   }
 }

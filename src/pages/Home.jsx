@@ -1,285 +1,257 @@
-import React, { useState, useEffect } from "react";
-import { base44 } from "@/api/base44Client";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import {
-  ArrowRight,
-  CheckCircle,
-  Users,
-  Award,
-  Globe,
-  TrendingUp,
-  Shield,
-  Zap
-} from "lucide-react";
-import { Link } from "react-router-dom";
-import ProductCard from "../components/common/ProductCard";
-import TestimonialCard from "../components/common/TestimonialCard";
+  ArrowRight, CheckCircle, Users, Award, Globe, TrendingUp,
+  Shield, Zap, Sparkles, HeartPulse, GraduationCap, Leaf,
+} from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import ProductCard from '@/components/common/ProductCard';
+import TestimonialCard from '@/components/common/TestimonialCard';
+import { useSiteContent } from '@/lib/site-content';
+import { api } from '@/lib/api';
+import { fadeUp, stagger, revealOnce } from '@/lib/motion';
+
+const PILLARS = [
+  {
+    icon: HeartPulse,
+    title: 'Health technology',
+    body: 'Digital health platforms that improve patient care, clinical workflows and public-health decisioning.',
+    accent: 'text-rose-600 bg-rose-50 ring-rose-100',
+  },
+  {
+    icon: GraduationCap,
+    title: 'Education technology',
+    body: 'Learning tools that make world-class training accessible to the next wave of African talent.',
+    accent: 'text-brand-700 bg-brand-50 ring-brand-100',
+  },
+  {
+    icon: Leaf,
+    title: 'Environmental tech',
+    body: 'Monitoring, sensing and analytics for organisations working on environmental sustainability.',
+    accent: 'text-leaf-700 bg-leaf-50 ring-leaf-100',
+  },
+];
+
+const WHY = [
+  { icon: CheckCircle, title: 'Proven track record', body: '50+ successful projects across health, education and environment.' },
+  { icon: Zap, title: 'Fast delivery', body: 'Small teams, agile process, weekly demos and predictable ship dates.' },
+  { icon: Award, title: 'Quality first', body: 'Every product ships with test coverage, monitoring and a runbook.' },
+  { icon: TrendingUp, title: 'Continuous innovation', body: 'AI, mobile and cloud embedded in everything we design.' },
+];
 
 export default function Home() {
-  const [latestProducts, setLatestProducts] = useState([]);
+  const { content } = useSiteContent();
+  const [products, setProducts] = useState([]);
   const [testimonials, setTestimonials] = useState([]);
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    loadData();
+    api.products.list({ limit: 3 }).then((r) => setProducts(r.items || r || [])).catch(() => {});
+    api.testimonials.list({ featured: 1, limit: 3 }).then((r) => setTestimonials(r.items || r || [])).catch(() => {});
   }, []);
 
-  const loadData = async () => {
-    try {
-      const [products, testimonialsData] = await Promise.all([
-        base44.entities.Product.list("-created_date", 3),
-        base44.entities.Testimonial.filter({ featured: true, approved: true }, "-created_date", 3)
-      ]);
-
-      setLatestProducts(products);
-      setTestimonials(testimonialsData);
-    } catch (error) {
-      console.error("Error loading data:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const hero = content.hero || {};
+  const stats = content.stats || [];
 
   return (
-    <div className="min-h-screen">
-      {/* Hero Section - Purple gradient background with image */}
-      <section 
-        className="relative py-32 overflow-hidden"
-        style={{
-          backgroundImage: 'url(https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=1600)',
-          backgroundSize: 'cover',
-          backgroundPosition: 'center'
-        }}
-      >
-        <div className="absolute inset-0 bg-gradient-to-r from-purple-600/90 to-indigo-600/90"></div>
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h1 className="text-5xl md:text-6xl font-bold text-white mb-6">
-            Building Reliable Technology
-            <span className="block text-white mt-2">For A Better Tomorrow</span>
-          </h1>
-          <p className="text-xl text-white mb-8 max-w-3xl mx-auto font-medium">
-            We create innovative solutions in health, education, and environmental technology
-            that drive measurable impact across African markets.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link to="/products">
-              <Button size="lg" className="bg-white text-purple-900 hover:bg-gray-100 font-semibold">
-                Explore Our Products
-                <ArrowRight className="ml-2 w-5 h-5" />
-              </Button>
-            </Link>
-            <Link to="/contact">
-              <Button size="lg" variant="outline" className="bg-transparent border-2 border-white text-white hover:bg-white hover:text-purple-900 font-semibold">
-                Get In Touch
-              </Button>
-            </Link>
+    <>
+      {/* ─── Hero ─────────────────────────────────────────────── */}
+      <section className="relative overflow-hidden bg-brand-radial text-white">
+        <div className="hero-grid absolute inset-0" />
+        {hero.background_image && (
+          <div
+            className="absolute inset-0 bg-cover bg-center opacity-20 mix-blend-luminosity"
+            style={{ backgroundImage: `url(${hero.background_image})` }}
+          />
+        )}
+        <div className="absolute -top-32 -left-32 blob bg-brand-500 w-[520px] h-[520px] animate-float" />
+        <div className="absolute -bottom-32 -right-24 blob bg-leaf-500 w-[520px] h-[520px]" style={{ animationDelay: '1.5s' }} />
+
+        <div className="container-page relative py-24 md:py-32">
+          <motion.div variants={stagger(0, 0.1)} initial="hidden" animate="show" className="max-w-4xl">
+            {hero.eyebrow && (
+              <motion.p variants={fadeUp} className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 backdrop-blur px-3 py-1 text-xs font-semibold uppercase tracking-widest text-leaf-200">
+                <Sparkles className="w-3 h-3" />
+                {hero.eyebrow}
+              </motion.p>
+            )}
+            <motion.h1 variants={fadeUp} className="mt-6 font-display text-5xl md:text-7xl font-bold leading-[1.02] tracking-tight">
+              {hero.title_line_1}
+              <br />
+              <span className="bg-clip-text text-transparent bg-gradient-to-r from-white via-leaf-200 to-white bg-[length:200%_auto] animate-gradient-x">
+                {hero.title_line_2}
+              </span>
+            </motion.h1>
+            <motion.p variants={fadeUp} className="mt-6 text-lg md:text-xl text-white/80 max-w-2xl leading-relaxed">
+              {hero.subtitle}
+            </motion.p>
+            <motion.div variants={fadeUp} className="mt-8 flex flex-wrap gap-3">
+              {hero.cta_primary?.href && (
+                <Link to={hero.cta_primary.href}>
+                  <Button size="lg" className="bg-white text-brand-900 hover:bg-white/90 font-semibold shadow-glow-green">
+                    {hero.cta_primary.label}
+                    <ArrowRight className="ml-2 w-5 h-5" />
+                  </Button>
+                </Link>
+              )}
+              {hero.cta_secondary?.href && (
+                <Link to={hero.cta_secondary.href}>
+                  <Button size="lg" variant="outline" className="border-white/30 text-white bg-white/5 hover:bg-white/10 backdrop-blur">
+                    {hero.cta_secondary.label}
+                  </Button>
+                </Link>
+              )}
+            </motion.div>
+          </motion.div>
+        </div>
+
+        {/* Stats strip — sits on the hero base */}
+        {stats.length > 0 && (
+          <div className="relative border-t border-white/10">
+            <div className="container-page py-8">
+              <motion.div
+                variants={stagger()}
+                {...revealOnce}
+                className="grid grid-cols-2 md:grid-cols-4 gap-6"
+              >
+                {stats.map((s, i) => (
+                  <motion.div key={i} variants={fadeUp} className="text-center">
+                    <div className="text-3xl md:text-4xl font-display font-bold text-white">
+                      {s.value}
+                    </div>
+                    <div className="text-sm text-white/60 mt-1">{s.label}</div>
+                  </motion.div>
+                ))}
+              </motion.div>
+            </div>
           </div>
+        )}
+      </section>
+
+      {/* ─── Pillars ──────────────────────────────────────────── */}
+      <section className="section bg-white">
+        <div className="container-page">
+          <motion.div {...revealOnce} variants={stagger()} className="max-w-2xl mb-14">
+            <motion.p variants={fadeUp} className="eyebrow">What we do</motion.p>
+            <motion.h2 variants={fadeUp} className="h-display mt-3">
+              Software with a <span className="text-gradient">purpose</span>.
+            </motion.h2>
+            <motion.p variants={fadeUp} className="lead mt-4">
+              Three sectors, one operating philosophy: build technology that measurably improves lives.
+            </motion.p>
+          </motion.div>
+
+          <motion.div variants={stagger()} {...revealOnce} className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {PILLARS.map(({ icon: Icon, title, body, accent }) => (
+              <motion.div key={title} variants={fadeUp}>
+                <Card className="h-full lift border border-slate-200 hover:border-brand-200 bg-gradient-to-br from-white to-slate-50/50">
+                  <CardContent className="p-7">
+                    <div className={`w-12 h-12 rounded-xl ring-1 ${accent} flex items-center justify-center mb-4`}>
+                      <Icon className="w-6 h-6" />
+                    </div>
+                    <h3 className="font-display text-xl font-bold text-brand-900 mb-2">{title}</h3>
+                    <p className="text-slate-600 leading-relaxed">{body}</p>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            ))}
+          </motion.div>
         </div>
       </section>
 
-      {/* Stats Section */}
-      <section className="py-16 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8 text-center">
-            <div className="space-y-2">
-              <div className="text-4xl font-bold text-purple-900">50+</div>
-              <div className="text-gray-700 font-medium">Projects Delivered</div>
-            </div>
-            <div className="space-y-2">
-              <div className="text-4xl font-bold text-green-600">98%</div>
-              <div className="text-gray-700 font-medium">Client Satisfaction</div>
-            </div>
-            <div className="space-y-2">
-              <div className="text-4xl font-bold text-purple-900">9+</div>
-              <div className="text-gray-700 font-medium">Years in the Industry</div>
-            </div>
-            <div className="space-y-2">
-              <div className="text-4xl font-bold text-green-600">24/7</div>
-              <div className="text-gray-700 font-medium">Support Available</div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* What We Do */}
-      <section className="py-20 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">What We Do</h2>
-            <p className="text-xl text-gray-700 max-w-3xl mx-auto font-medium">
-              We specialize in creating technology solutions that address real-world challenges
-              in health, education, and environmental sustainability.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <Card className="hover:shadow-xl transition-shadow border-2 hover:border-purple-900">
-              <CardContent className="pt-6">
-                <div className="w-12 h-12 bg-purple-900 rounded-lg flex items-center justify-center mb-4">
-                  <Shield className="w-6 h-6 text-white" />
-                </div>
-                <h3 className="text-xl font-semibold mb-3 text-gray-900">Health Technology</h3>
-                <p className="text-gray-700">
-                  Building digital health solutions that improve patient care and healthcare delivery.
-                </p>
-              </CardContent>
-            </Card>
-
-            <Card className="hover:shadow-xl transition-shadow border-2 hover:border-green-600">
-              <CardContent className="pt-6">
-                <div className="w-12 h-12 bg-green-600 rounded-lg flex items-center justify-center mb-4">
-                  <Users className="w-6 h-6 text-white" />
-                </div>
-                <h3 className="text-xl font-semibold mb-3 text-gray-900">Education Technology</h3>
-                <p className="text-gray-700">
-                  Empowering learners with innovative educational platforms and tools.
-                </p>
-              </CardContent>
-            </Card>
-
-            <Card className="hover:shadow-xl transition-shadow border-2 hover:border-purple-900">
-              <CardContent className="pt-6">
-                <div className="w-12 h-12 bg-purple-900 rounded-lg flex items-center justify-center mb-4">
-                  <Globe className="w-6 h-6 text-white" />
-                </div>
-                <h3 className="text-xl font-semibold mb-3 text-gray-900">Environmental Tech</h3>
-                <p className="text-gray-700">
-                  Creating sustainable solutions for environmental monitoring and management.
-                </p>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-      </section>
-
-      {/* Featured Products */}
-      {latestProducts.length > 0 && (
-        <section className="py-20 bg-white">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex flex-col md:flex-row justify-between items-center mb-12">
-              <div className="mb-6 md:mb-0">
-                <h2 className="text-4xl font-bold text-gray-900 mb-4">Featured Products</h2>
-                <p className="text-xl text-gray-700 font-medium">
-                  Discover our latest innovative solutions
-                </p>
+      {/* ─── Featured products ───────────────────────────────── */}
+      {products.length > 0 && (
+        <section className="section bg-slate-50/60">
+          <div className="container-page">
+            <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-12">
+              <div className="max-w-2xl">
+                <p className="eyebrow">Featured</p>
+                <h2 className="h-section mt-3">Recent products, live in the wild.</h2>
               </div>
               <Link to="/products">
-                <Button variant="outline" className="border-2 border-purple-900 text-purple-900 hover:bg-purple-900 hover:text-white font-semibold">
-                  View All Products
+                <Button variant="outline" className="border-brand-300 text-brand-800 hover:bg-brand-50">
+                  View all products
                   <ArrowRight className="ml-2 w-4 h-4" />
                 </Button>
               </Link>
             </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {latestProducts.map((product) => (
-                <ProductCard key={product.id} product={product} />
-              ))}
-            </div>
+            <motion.div variants={stagger()} {...revealOnce} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {products.map((p) => <ProductCard key={p.id} product={p} />)}
+            </motion.div>
           </div>
         </section>
       )}
 
-      {/* Why Choose Us */}
-      <section className="py-20 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">Why Choose Cereus Technologies</h2>
-            <p className="text-xl text-gray-700 max-w-3xl mx-auto font-medium">
-              We combine technical excellence with deep market understanding to deliver solutions that work.
+      {/* ─── Why Cereus ──────────────────────────────────────── */}
+      <section className="section bg-white">
+        <div className="container-page">
+          <div className="text-center max-w-2xl mx-auto mb-14">
+            <p className="eyebrow">Why Cereus</p>
+            <h2 className="h-section mt-3">Technical depth. Delivery discipline.</h2>
+            <p className="lead mt-4">
+              We pair engineering rigour with a bias for shipping so that value lands in your users' hands.
             </p>
           </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            <Card className="border-2 hover:border-purple-900 hover:shadow-lg transition-all">
-              <CardContent className="pt-6 text-center">
-                <div className="w-16 h-16 bg-purple-900 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <CheckCircle className="w-8 h-8 text-white" />
-                </div>
-                <h3 className="text-lg font-semibold mb-2 text-gray-900">Proven Track Record</h3>
-                <p className="text-gray-700 text-sm">
-                  Years of successful project delivery across multiple sectors
-                </p>
-              </CardContent>
-            </Card>
-
-            <Card className="border-2 hover:border-green-600 hover:shadow-lg transition-all">
-              <CardContent className="pt-6 text-center">
-                <div className="w-16 h-16 bg-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Zap className="w-8 h-8 text-white" />
-                </div>
-                <h3 className="text-lg font-semibold mb-2 text-gray-900">Fast Delivery</h3>
-                <p className="text-gray-700 text-sm">
-                  Agile development process ensuring quick turnaround times
-                </p>
-              </CardContent>
-            </Card>
-
-            <Card className="border-2 hover:border-purple-900 hover:shadow-lg transition-all">
-              <CardContent className="pt-6 text-center">
-                <div className="w-16 h-16 bg-purple-900 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Award className="w-8 h-8 text-white" />
-                </div>
-                <h3 className="text-lg font-semibold mb-2 text-gray-900">Quality Assurance</h3>
-                <p className="text-gray-700 text-sm">
-                  Rigorous testing and quality control processes
-                </p>
-              </CardContent>
-            </Card>
-
-            <Card className="border-2 hover:border-green-600 hover:shadow-lg transition-all">
-              <CardContent className="pt-6 text-center">
-                <div className="w-16 h-16 bg-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <TrendingUp className="w-8 h-8 text-white" />
-                </div>
-                <h3 className="text-lg font-semibold mb-2 text-gray-900">Continuous Innovation</h3>
-                <p className="text-gray-700 text-sm">
-                  Always exploring new technologies and methodologies
-                </p>
-              </CardContent>
-            </Card>
-          </div>
+          <motion.div variants={stagger()} {...revealOnce} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {WHY.map(({ icon: Icon, title, body }) => (
+              <motion.div key={title} variants={fadeUp}>
+                <Card className="h-full lift text-center border border-slate-200">
+                  <CardContent className="p-6">
+                    <div className="w-14 h-14 mx-auto rounded-2xl bg-brand-gradient text-white flex items-center justify-center mb-4 shadow-glow">
+                      <Icon className="w-7 h-7" />
+                    </div>
+                    <h3 className="font-display text-lg font-semibold text-brand-900 mb-1">{title}</h3>
+                    <p className="text-sm text-slate-600 leading-relaxed">{body}</p>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            ))}
+          </motion.div>
         </div>
       </section>
 
-      {/* Testimonials */}
+      {/* ─── Testimonials ────────────────────────────────────── */}
       {testimonials.length > 0 && (
-        <section className="py-20 bg-white">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-12">
-              <h2 className="text-4xl font-bold text-gray-900 mb-4">What Our Clients Say</h2>
-              <p className="text-xl text-gray-700 font-medium">
-                Don't just take our word for it
-              </p>
+        <section className="section bg-slate-50/60">
+          <div className="container-page">
+            <div className="text-center max-w-2xl mx-auto mb-12">
+              <p className="eyebrow">Kind words</p>
+              <h2 className="h-section mt-3">What clients tell their teams.</h2>
             </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {testimonials.map((testimonial) => (
-                <TestimonialCard key={testimonial.id} testimonial={testimonial} />
-              ))}
-            </div>
+            <motion.div variants={stagger()} {...revealOnce} className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {testimonials.map((t) => <TestimonialCard key={t.id} testimonial={t} />)}
+            </motion.div>
           </div>
         </section>
       )}
 
-      {/* CTA Section - Purple gradient background */}
-      <section className="py-24 bg-gradient-to-r from-purple-900 to-purple-800 text-white">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-4xl font-bold mb-6 text-white">
-            Ready to Transform Your Business?
+      {/* ─── CTA ─────────────────────────────────────────────── */}
+      <section className="relative overflow-hidden bg-brand-radial text-white">
+        <div className="hero-grid absolute inset-0 opacity-40" />
+        <div className="container-page relative py-20 md:py-24 text-center">
+          <p className="eyebrow bg-white/10 border-white/20 text-leaf-200 mx-auto">Let's build</p>
+          <h2 className="mt-4 font-display text-4xl md:text-5xl font-bold text-white">
+            Ready to ship your next big thing?
           </h2>
-          <p className="text-xl mb-8 font-medium text-white">
-            Let's discuss how we can help you achieve your technology goals
+          <p className="mt-4 text-white/70 max-w-xl mx-auto text-lg">
+            Tell us the outcome you're after and we'll come back with a working plan within two working days.
           </p>
-          <Link to="/contact">
-            <Button size="lg" className="bg-green-600 hover:bg-green-700 text-white font-semibold">
-              Start Your Project Today
-              <ArrowRight className="ml-2 w-5 h-5" />
-            </Button>
-          </Link>
+          <div className="mt-8 flex flex-wrap gap-3 justify-center">
+            <Link to="/contact">
+              <Button size="lg" className="bg-leaf-500 hover:bg-leaf-600 text-white font-semibold shadow-glow-green">
+                Start your project
+                <ArrowRight className="ml-2 w-5 h-5" />
+              </Button>
+            </Link>
+            <Link to="/services">
+              <Button size="lg" variant="outline" className="border-white/30 text-white bg-white/5 hover:bg-white/10">
+                Explore services
+              </Button>
+            </Link>
+          </div>
         </div>
       </section>
-    </div>
+    </>
   );
 }

@@ -1,82 +1,88 @@
-import { Toaster } from "@/components/ui/toaster"
-import { QueryClientProvider } from '@tanstack/react-query'
-import { queryClientInstance } from '@/lib/query-client'
-import NavigationTracker from '@/lib/NavigationTracker'
-import { pagesConfig } from './pages.config'
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import PageNotFound from './lib/PageNotFound';
-import { AuthProvider, useAuth } from '@/lib/AuthContext';
-import UserNotRegisteredError from '@/components/UserNotRegisteredError';
+import { Routes, Route, useLocation } from 'react-router-dom';
+import { lazy, Suspense, useEffect } from 'react';
+import Layout from '@/Layout';
+import AdminGuard from '@/lib/admin-guard';
 
-const { Pages, Layout, mainPage } = pagesConfig;
-const mainPageKey = mainPage ?? Object.keys(Pages)[0];
-const MainPage = mainPageKey ? Pages[mainPageKey] : <></>;
+// Lazy-load page bundles for a lighter first paint.
+const Home = lazy(() => import('@/pages/Home'));
+const About = lazy(() => import('@/pages/About'));
+const Products = lazy(() => import('@/pages/products'));
+const ProductDetail = lazy(() => import('@/pages/product-detail'));
+const Services = lazy(() => import('@/pages/services'));
+const Academy = lazy(() => import('@/pages/academy'));
+const Careers = lazy(() => import('@/pages/careers'));
+const Contact = lazy(() => import('@/pages/contact'));
+const Insights = lazy(() => import('@/pages/insights'));
+const InsightDetail = lazy(() => import('@/pages/insight-detail'));
+const NotFound = lazy(() => import('@/pages/NotFound'));
 
-const LayoutWrapper = ({ children, currentPageName }) => Layout ?
-  <Layout currentPageName={currentPageName}>{children}</Layout>
-  : <>{children}</>;
+// Admin
+const AdminLayout = lazy(() => import('@/pages/admin/Layout'));
+const AdminDashboard = lazy(() => import('@/pages/admin/Dashboard'));
+const AdminProducts = lazy(() => import('@/pages/admin/Products'));
+const AdminInsights = lazy(() => import('@/pages/admin/Insights'));
+const AdminTestimonials = lazy(() => import('@/pages/admin/Testimonials'));
+const AdminCareers = lazy(() => import('@/pages/admin/Careers'));
+const AdminSiteContent = lazy(() => import('@/pages/admin/SiteContent'));
+const AdminSubmissions = lazy(() => import('@/pages/admin/Submissions'));
 
-const AuthenticatedApp = () => {
-  const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
-
-  // Show loading spinner while checking app public settings or auth
-  if (isLoadingPublicSettings || isLoadingAuth) {
-    return (
-      <div className="fixed inset-0 flex items-center justify-center">
-        <div className="w-8 h-8 border-4 border-slate-200 border-t-slate-800 rounded-full animate-spin"></div>
-      </div>
-    );
-  }
-
-  // Handle authentication errors
-  if (authError) {
-    if (authError.type === 'user_not_registered') {
-      return <UserNotRegisteredError />;
-    } else if (authError.type === 'auth_required') {
-      // Redirect to login automatically
-      navigateToLogin();
-      return null;
-    }
-  }
-
-  // Render the main app
-  return (
-    <Routes>
-      <Route path="/" element={
-        <LayoutWrapper currentPageName={mainPageKey}>
-          <MainPage />
-        </LayoutWrapper>
-      } />
-      {Object.entries(Pages).map(([path, Page]) => (
-        <Route
-          key={path}
-          path={`/${path}`}
-          element={
-            <LayoutWrapper currentPageName={path}>
-              <Page />
-            </LayoutWrapper>
-          }
-        />
-      ))}
-      <Route path="*" element={<PageNotFound />} />
-    </Routes>
-  );
-};
-
-
-function App() {
-
-  return (
-    <AuthProvider>
-      <QueryClientProvider client={queryClientInstance}>
-        <Router>
-          <NavigationTracker />
-          <AuthenticatedApp />
-        </Router>
-        <Toaster />
-      </QueryClientProvider>
-    </AuthProvider>
-  )
+function ScrollToTop() {
+  const { pathname } = useLocation();
+  useEffect(() => { window.scrollTo({ top: 0, behavior: 'instant' }); }, [pathname]);
+  return null;
 }
 
-export default App
+function PageFallback() {
+  return (
+    <div className="min-h-[60vh] flex items-center justify-center">
+      <div className="w-8 h-8 rounded-full border-4 border-brand-200 border-t-brand-700 animate-spin" />
+    </div>
+  );
+}
+
+export default function App() {
+  return (
+    <>
+      <ScrollToTop />
+      <Suspense fallback={<PageFallback />}>
+        <Routes>
+          {/* Public site — Layout provides header, footer, chatbot */}
+          <Route element={<Layout />}>
+            <Route path="/" element={<Home />} />
+            <Route path="/home" element={<Home />} />
+            <Route path="/about" element={<About />} />
+            <Route path="/products" element={<Products />} />
+            <Route path="/products/:slug" element={<ProductDetail />} />
+            <Route path="/product-detail" element={<ProductDetail />} />
+            <Route path="/services" element={<Services />} />
+            <Route path="/academy" element={<Academy />} />
+            <Route path="/careers" element={<Careers />} />
+            <Route path="/contact" element={<Contact />} />
+            <Route path="/insights" element={<Insights />} />
+            <Route path="/insights/:slug" element={<InsightDetail />} />
+            <Route path="/insight-detail" element={<InsightDetail />} />
+            <Route path="*" element={<NotFound />} />
+          </Route>
+
+          {/* Admin — protected by Clerk + email allow-list */}
+          <Route
+            path="/admin/*"
+            element={
+              <AdminGuard>
+                <AdminLayout />
+              </AdminGuard>
+            }
+          >
+            <Route index element={<AdminDashboard />} />
+            <Route path="products" element={<AdminProducts />} />
+            <Route path="insights" element={<AdminInsights />} />
+            <Route path="testimonials" element={<AdminTestimonials />} />
+            <Route path="careers" element={<AdminCareers />} />
+            <Route path="site" element={<AdminSiteContent />} />
+            <Route path="submissions" element={<AdminSubmissions />} />
+          </Route>
+        </Routes>
+      </Suspense>
+    </>
+  );
+}

@@ -1,227 +1,133 @@
-
-import React, { useState, useEffect } from "react";
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
-import {
-  Search,
-  Clock,
-  ArrowRight,
-  Calendar,
-  User
-} from "lucide-react";
-import { base44 } from "@/api/base44Client";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { format } from "date-fns";
-import { Link } from "react-router-dom";
-import { createPageUrl } from "@/utils";
+import { useEffect, useMemo, useState } from 'react';
+import { Link } from 'react-router-dom';
+import { Search, Clock, ArrowRight, Calendar, User } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Card, CardContent } from '@/components/ui/card';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import Hero from '@/components/common/Hero';
+import { api } from '@/lib/api';
+import { formatDate } from '@/lib/utils';
+import { fadeUp, stagger, revealOnce } from '@/lib/motion';
 
 export default function Insights() {
   const [posts, setPosts] = useState([]);
-  const [filteredPosts, setFilteredPosts] = useState([]);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("all");
   const [loading, setLoading] = useState(true);
+  const [q, setQ] = useState('');
+  const [category, setCategory] = useState('all');
 
   useEffect(() => {
-    loadPosts();
+    api.insights.list().then((r) => setPosts(r.items || r || [])).catch(() => {}).finally(() => setLoading(false));
   }, []);
 
-  useEffect(() => {
-    filterPosts();
-  }, [searchQuery, selectedCategory, posts]);
+  const categories = useMemo(
+    () => Array.from(new Set(posts.map((p) => p.category).filter(Boolean))),
+    [posts]
+  );
 
-  const loadPosts = async () => {
-    try {
-      const data = await base44.entities.BlogPost.filter({ published: true }, "-published_date");
-      setPosts(data);
-      setFilteredPosts(data);
-    } catch (error) {
-      console.error("Error loading posts:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const filterPosts = () => {
-    let filtered = posts;
-
-    if (searchQuery) {
-      filtered = filtered.filter(
-        (post) =>
-          post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          post.excerpt?.toLowerCase().includes(searchQuery.toLowerCase())
-      );
-    }
-
-    if (selectedCategory !== "all") {
-      filtered = filtered.filter((post) => post.category === selectedCategory);
-    }
-
-    setFilteredPosts(filtered);
-  };
-
-  const categories = [...new Set(posts.map((p) => p.category).filter(Boolean))];
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-teal-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading insights...</p>
-        </div>
-      </div>
-    );
-  }
+  const filtered = useMemo(() => posts.filter((p) => {
+    if (q && !`${p.title} ${p.excerpt || ''}`.toLowerCase().includes(q.toLowerCase())) return false;
+    if (category !== 'all' && p.category !== category) return false;
+    return true;
+  }), [posts, q, category]);
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Hero Section */}
-      <div 
-        className="relative overflow-hidden"
-        style={{
-          backgroundImage: 'url(https://images.unsplash.com/photo-1499750310107-5fef28a66643?w=1600)',
-          backgroundSize: 'cover',
-          backgroundPosition: 'center'
-        }}
-      >
-        <div className="absolute inset-0 bg-gradient-to-r from-teal-600/90 to-blue-600/90"></div>
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 text-center">
-          <h1 className="text-4xl md:text-5xl font-bold mb-4 text-white">Insights & Resources</h1>
-          <p className="text-xl text-white max-w-3xl mx-auto">
-            Industry insights, technical deep-dives, and thought leadership from our team
-          </p>
-        </div>
-      </div>
+    <>
+      <Hero
+        eyebrow="Insights & resources"
+        title="Ideas from the workshop."
+        subtitle="Deep-dives, engineering notes and thought leadership from the Cereus team."
+      />
 
-      {/* Filters */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="bg-white rounded-lg shadow-sm p-6 mb-8">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-              <Input
-                placeholder="Search articles..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10"
-              />
+      <section className="section bg-white">
+        <div className="container-page">
+          <div className="glass p-5 md:p-6 mb-10">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+                <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search articles…" className="pl-10 bg-white" />
+              </div>
+              <Select value={category} onValueChange={setCategory}>
+                <SelectTrigger className="bg-white"><SelectValue placeholder="All categories" /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All categories</SelectItem>
+                  {categories.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}
+                </SelectContent>
+              </Select>
             </div>
-
-            <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-              <SelectTrigger>
-                <SelectValue placeholder="All Categories" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Categories</SelectItem>
-                {categories.map((category) => (
-                  <SelectItem key={category} value={category}>
-                    {category}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <div className="mt-4 flex items-center justify-between text-sm text-slate-500">
+              <span>{filtered.length} of {posts.length} articles</span>
+              {(q || category !== 'all') && (
+                <Button variant="ghost" size="sm" onClick={() => { setQ(''); setCategory('all'); }}>Clear</Button>
+              )}
+            </div>
           </div>
 
-          <div className="mt-4 flex items-center justify-between text-sm text-gray-600">
-            <span>Showing {filteredPosts.length} of {posts.length} articles</span>
-            {(searchQuery || selectedCategory !== "all") && (
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => {
-                  setSearchQuery("");
-                  setSelectedCategory("all");
-                }}
-              >
-                Clear Filters
-              </Button>
-            )}
-          </div>
+          {loading ? (
+            <div className="text-center py-16 text-slate-500">Loading articles…</div>
+          ) : filtered.length ? (
+            <motion.div variants={stagger()} {...revealOnce} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {filtered.map((p) => <PostCard key={p.id} post={p} />)}
+            </motion.div>
+          ) : (
+            <EmptyState onClear={() => { setQ(''); setCategory('all'); }} />
+          )}
         </div>
+      </section>
+    </>
+  );
+}
 
-        {/* Posts Grid */}
-        {filteredPosts.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {filteredPosts.map((post) => (
-              <Card key={post.id} className="group hover:shadow-xl transition-all duration-300">
-                {post.featured_image && (
-                  <div className="h-48 overflow-hidden">
-                    <img
-                      src={post.featured_image}
-                      alt={post.title}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                    />
-                  </div>
-                )}
-                <CardContent className="pt-6">
-                  <div className="flex items-center gap-2 mb-3 text-sm text-gray-600">
-                    {post.category && (
-                      <Badge variant="secondary">{post.category}</Badge>
-                    )}
-                    {post.published_date && (
-                      <span className="flex items-center">
-                        <Calendar className="w-3 h-3 mr-1" />
-                        {format(new Date(post.published_date), 'MMM d, yyyy')}
-                      </span>
-                    )}
-                  </div>
-
-                  <h3 className="text-xl font-semibold mb-2 group-hover:text-teal-600 transition-colors">
-                    {post.title}
-                  </h3>
-
-                  {post.excerpt && (
-                    <p className="text-gray-600 mb-4 line-clamp-3">{post.excerpt}</p>
-                  )}
-
-                  <div className="flex items-center justify-between text-sm">
-                    {post.author && (
-                      <span className="flex items-center text-gray-600">
-                        <User className="w-4 h-4 mr-1" />
-                        {post.author}
-                      </span>
-                    )}
-                    {post.reading_time && (
-                      <span className="flex items-center text-gray-600">
-                        <Clock className="w-4 h-4 mr-1" />
-                        {post.reading_time} min read
-                      </span>
-                    )}
-                  </div>
-
-                  <Link to={`${createPageUrl('insight-detail')}?id=${post.id}`}>
-                    <Button className="w-full mt-4" variant="outline">
-                      Read More
-                      <ArrowRight className="w-4 h-4 ml-2" />
-                    </Button>
-                  </Link>
-                </CardContent>
-              </Card>
-            ))}
+function PostCard({ post }) {
+  return (
+    <motion.div variants={fadeUp}>
+      <Link to={`/insights/${post.slug || post.id}`} className="block h-full">
+        <Card className="group h-full overflow-hidden lift border border-slate-200 hover:border-brand-200">
+          <div className="h-48 overflow-hidden bg-brand-radial relative">
+            {post.featured_image && (
+              <img
+                src={post.featured_image}
+                alt={post.title}
+                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                loading="lazy"
+              />
+            )}
+            <div className="absolute inset-0 bg-gradient-to-t from-brand-950/60 to-transparent" />
           </div>
-        ) : (
-          <div className="text-center py-16">
-            <p className="text-xl text-gray-600 mb-4">No articles found</p>
-            <p className="text-gray-500 mb-8">Try adjusting your filters</p>
-            <Button
-              onClick={() => {
-                setSearchQuery("");
-                setSelectedCategory("all");
-              }}
-            >
-              Clear Filters
-            </Button>
-          </div>
-        )}
-      </div>
+          <CardContent className="p-6">
+            <div className="flex items-center gap-2 mb-3 text-xs text-slate-500">
+              {post.category && <Badge className="bg-brand-100 text-brand-800 hover:bg-brand-100">{post.category}</Badge>}
+              {post.published_date && (
+                <span className="flex items-center gap-1"><Calendar className="w-3 h-3" />{formatDate(post.published_date)}</span>
+              )}
+            </div>
+            <h3 className="font-display text-xl font-bold text-brand-900 group-hover:text-brand-700 transition-colors line-clamp-2">
+              {post.title}
+            </h3>
+            {post.excerpt && <p className="text-slate-600 mt-3 line-clamp-3">{post.excerpt}</p>}
+            <div className="flex items-center justify-between text-xs text-slate-500 mt-4 pt-4 border-t border-slate-100">
+              {post.author && <span className="flex items-center gap-1"><User className="w-3 h-3" />{post.author}</span>}
+              {post.reading_time && <span className="flex items-center gap-1"><Clock className="w-3 h-3" />{post.reading_time} min read</span>}
+            </div>
+            <div className="mt-4 inline-flex items-center gap-1 text-brand-700 font-medium text-sm">
+              Read article
+              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+            </div>
+          </CardContent>
+        </Card>
+      </Link>
+    </motion.div>
+  );
+}
+
+function EmptyState({ onClear }) {
+  return (
+    <div className="text-center py-16 border border-dashed border-slate-200 rounded-2xl">
+      <p className="text-xl text-slate-700 mb-2">No articles found</p>
+      <p className="text-slate-500 mb-6">Try adjusting your filters.</p>
+      <Button onClick={onClear}>Clear filters</Button>
     </div>
   );
 }

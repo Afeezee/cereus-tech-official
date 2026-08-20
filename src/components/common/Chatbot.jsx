@@ -1,199 +1,135 @@
+import { useEffect, useRef, useState } from 'react';
+import { MessageCircle, X, Send, Bot, User, Phone, Mail } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { useSiteContent } from '@/lib/site-content';
 
-import React, { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { 
-  MessageCircle, 
-  X, 
-  Send, 
-  Bot, 
-  User, 
-  Loader2,
-  Phone,
-  Mail
-} from "lucide-react";
-import { base44 } from "@/api/base44Client";
-
+// Rules-based FAQ chatbot — no API key required. Answers common questions
+// using site content; falls back to a "contact us" prompt for anything else.
 export default function Chatbot() {
-  const [isOpen, setIsOpen] = useState(false);
+  const { content } = useSiteContent();
+  const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState([
     {
-      type: "bot",
-      content: "Hello! I'm here to help you learn about Cereus Technologies. Ask me about our products, services, team, or anything else you'd like to know!"
-    }
+      type: 'bot',
+      content:
+        `Hi! I'm the Cereus assistant. Ask me about our products, services, academy, careers, or how to get in touch.`,
+    },
   ]);
-  const [inputMessage, setInputMessage] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
+  const [input, setInput] = useState('');
+  const bodyRef = useRef(null);
 
-  const handleSendMessage = async () => {
-    if (!inputMessage.trim() || isLoading) return;
+  useEffect(() => {
+    if (bodyRef.current) bodyRef.current.scrollTop = bodyRef.current.scrollHeight;
+  }, [messages, open]);
 
-    const userMessage = inputMessage.trim();
-    setInputMessage("");
-    
-    setMessages(prev => [...prev, { type: "user", content: userMessage }]);
-    setIsLoading(true);
-
-    try {
-      const systemPrompt = `You are a helpful customer service assistant for Cereus Technologies. Here is key information about the company:
-
-ABOUT CEREUS TECHNOLOGIES:
-- Founded in 2016 in Lagos, Nigeria
-- Builds reliable technology solutions for health, education, and environment
-- Serves 50+ institutional clients across 12 countries
-- Team of technologists, researchers, and domain experts
-
-LEADERSHIP TEAM:
-- Afeez A. Olagunju: Founder/CEO, Computer Science expert
-- Abe Enoch A.: Chief Technology Officer, AI/ML expert
-- Akanfe Abidemi M.: Research and Development Director
-
-SERVICES:
-- Custom Software Development
-- Technology Consulting & Strategy
-- Research & Development Partnerships
-- System Integration & Deployment
-- Cereus Academy: Educational technology programs
-
-CONTACT INFORMATION:
-- Phone: +234 701 462 3270
-- Email: info@cereustechnologies.com
-- Location: Lagos, Nigeria
-- Business Hours: Mon-Fri 9AM-5PM WAT, Sat 10AM-2PM WAT
-
-INSTRUCTIONS:
-1. Answer questions using only the information provided above
-2. Be helpful, professional, and concise
-3. If asked about details not covered above, politely say you don't have that information and provide contact details
-4. Do NOT make up any information
-5. Always offer to connect them with the team for detailed discussions
-
-User question: ${userMessage}`;
-
-      const response = await base44.integrations.Core.InvokeLLM({
-        prompt: systemPrompt
-      });
-
-      setMessages(prev => [...prev, { type: "bot", content: response }]);
-    } catch (error) {
-      setMessages(prev => [...prev, { 
-        type: "bot", 
-        content: "I'm sorry, I'm having trouble connecting right now. Please contact us directly at info@cereustechnologies.com or +234 701 462 3270 for immediate assistance." 
-      }]);
-    } finally {
-      setIsLoading(false);
+  const answer = (q) => {
+    const t = q.toLowerCase();
+    const contact = content.contact || {};
+    if (/(contact|reach|email|phone|call|talk)/.test(t)) {
+      return `You can reach us at ${contact.email || 'info@cereustechnologies.com'} or ${contact.phone || '+234 701 462 3270'}. Business hours: ${contact.hours || 'Mon–Fri 9am–5pm WAT'}.`;
     }
+    if (/(product|solution|platform)/.test(t)) {
+      return `We build products across Health, Education and Environment. Visit /products for the full catalogue — each product page has a live demo link where available.`;
+    }
+    if (/(service|consulting|development|hire)/.test(t)) {
+      return `We offer custom software, AI/ML, digital transformation consulting, product design and IT support. See /services for details, or head to /contact to start a scoping call.`;
+    }
+    if (/(academy|course|training|learn|teach|instructor)/.test(t)) {
+      return `Cereus Academy trains the next wave of African tech talent. Enroll or apply to teach at /academy.`;
+    }
+    if (/(career|job|position|hiring|apply|work)/.test(t)) {
+      return `Open roles and applications live at /careers. We're always keen to meet great engineers, designers and researchers.`;
+    }
+    if (/(insight|blog|article|news|resource)/.test(t)) {
+      return `Read our team's write-ups at /insights.`;
+    }
+    if (/(about|company|team|history|founder)/.test(t)) {
+      return `Cereus Technologies was founded in 2016 in Lagos and has served 50+ clients across 12 countries. Meet the team at /about.`;
+    }
+    if (/(hello|hi|hey|good (morning|afternoon|evening))/.test(t)) {
+      return `Hey! What can I help you find today? Try "products", "services", "academy", or "careers".`;
+    }
+    return `Great question — I don't have that off-hand. Please reach the team at ${contact.email || 'info@cereustechnologies.com'} or ${contact.phone || '+234 701 462 3270'} and someone will get back within 24 hours.`;
   };
 
-  const handleKeyPress = (e) => {
-    if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault();
-      handleSendMessage();
-    }
+  const send = () => {
+    const q = input.trim();
+    if (!q) return;
+    setMessages((m) => [...m, { type: 'user', content: q }, { type: 'bot', content: answer(q) }]);
+    setInput('');
   };
 
   return (
-    <div className="fixed bottom-4 right-4 z-50">
-      {!isOpen ? (
-        <Button
-          onClick={() => setIsOpen(true)}
-          className="bg-gradient-to-r from-purple-900 to-purple-800 hover:from-purple-800 hover:to-purple-700 text-white rounded-full p-4 shadow-lg"
-          size="lg"
-        >
-          <MessageCircle className="w-6 h-6" />
-        </Button>
-      ) : (
-        <Card className="w-80 h-96 flex flex-col shadow-xl">
-          <CardHeader className="bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-t-lg">
-            <div className="flex items-center justify-between">
-              <CardTitle className="text-lg flex items-center">
-                <Bot className="w-5 h-5 mr-2" />
-                Cereus Assistant
-              </CardTitle>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setIsOpen(false)}
-                className="text-white hover:bg-purple-700 p-1"
-              >
+    <div className="fixed bottom-5 right-5 z-50">
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            initial={{ opacity: 0, y: 12, scale: 0.96 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 8, scale: 0.96 }}
+            transition={{ duration: 0.2, ease: 'easeOut' }}
+            className="mb-3 w-[340px] h-[460px] rounded-2xl overflow-hidden shadow-glow bg-white border border-slate-200 flex flex-col"
+          >
+            <div className="flex items-center justify-between px-4 py-3 bg-brand-gradient text-white">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-full bg-white/15 flex items-center justify-center">
+                  <Bot className="w-4 h-4" />
+                </div>
+                <div className="leading-tight">
+                  <p className="font-semibold text-sm">Cereus Assistant</p>
+                  <p className="text-[11px] text-white/70">Usually replies instantly</p>
+                </div>
+              </div>
+              <button onClick={() => setOpen(false)} className="p-1 rounded hover:bg-white/10">
                 <X className="w-4 h-4" />
-              </Button>
+              </button>
             </div>
-          </CardHeader>
 
-          <CardContent className="flex-1 flex flex-col p-0">
-            {/* Messages */}
-            <div className="flex-1 overflow-y-auto p-4 space-y-3">
-              {messages.map((message, index) => (
-                <div key={index} className={`flex ${message.type === 'user' ? 'justify-end' : 'justify-start'}`}>
-                  <div className={`flex items-start space-x-2 max-w-[80%] ${message.type === 'user' ? 'flex-row-reverse space-x-reverse' : ''}`}>
-                    <div className={`w-6 h-6 rounded-full flex items-center justify-center ${message.type === 'user' ? 'bg-green-600' : 'bg-purple-900'}`}>
-                      {message.type === 'user' ? (
-                        <User className="w-3 h-3 text-white" />
-                      ) : (
-                        <Bot className="w-3 h-3 text-white" />
-                      )}
+            <div ref={bodyRef} className="flex-1 overflow-y-auto p-3 space-y-3 bg-slate-50/50">
+              {messages.map((m, i) => (
+                <div key={i} className={`flex ${m.type === 'user' ? 'justify-end' : 'justify-start'}`}>
+                  <div className={`flex items-start gap-2 max-w-[85%] ${m.type === 'user' ? 'flex-row-reverse' : ''}`}>
+                    <div className={`w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 ${m.type === 'user' ? 'bg-leaf-600' : 'bg-brand-800'}`}>
+                      {m.type === 'user' ? <User className="w-3 h-3 text-white" /> : <Bot className="w-3 h-3 text-white" />}
                     </div>
-                    <div className={`rounded-lg p-3 ${message.type === 'user' ? 'bg-green-600 text-white' : 'bg-gray-100 text-gray-800'}`}>
-                      <p className="text-sm leading-relaxed whitespace-pre-wrap">{message.content}</p>
+                    <div className={`rounded-2xl px-3 py-2 text-sm leading-relaxed ${m.type === 'user' ? 'bg-leaf-600 text-white rounded-br-sm' : 'bg-white text-slate-800 border border-slate-200 rounded-bl-sm'}`}>
+                      {m.content}
                     </div>
                   </div>
                 </div>
               ))}
-              
-              {isLoading && (
-                <div className="flex justify-start">
-                  <div className="flex items-start space-x-2">
-                    <div className="w-6 h-6 rounded-full bg-purple-900 flex items-center justify-center">
-                      <Bot className="w-3 h-3 text-white" />
-                    </div>
-                    <div className="bg-gray-100 rounded-lg p-3">
-                      <Loader2 className="w-4 h-4 animate-spin text-purple-900" />
-                    </div>
-                  </div>
-                </div>
-              )}
             </div>
 
-            {/* Contact Info Footer */}
-            <div className="border-t bg-gray-50 p-3">
-              <div className="text-xs text-gray-600 space-y-1">
-                <div className="flex items-center space-x-1">
-                  <Phone className="w-3 h-3" />
-                  <span>+234 701 462 3270</span>
-                </div>
-                <div className="flex items-center space-x-1">
-                  <Mail className="w-3 h-3" />
-                  <span>info@cereustechnologies.com</span>
-                </div>
-              </div>
+            <div className="border-t border-slate-200 bg-white px-3 py-2 text-[11px] text-slate-500 flex items-center gap-3">
+              <Phone className="w-3 h-3 text-brand-700" />{content.contact?.phone}
+              <Mail className="w-3 h-3 text-brand-700" />{content.contact?.email}
             </div>
 
-            {/* Input */}
-            <div className="border-t p-3">
-              <div className="flex space-x-2">
-                <Input
-                  value={inputMessage}
-                  onChange={(e) => setInputMessage(e.target.value)}
-                  onKeyPress={handleKeyPress}
-                  placeholder="Ask me anything..."
-                  className="flex-1 text-sm"
-                  disabled={isLoading}
-                />
-                <Button
-                  onClick={handleSendMessage}
-                  disabled={!inputMessage.trim() || isLoading}
-                  size="sm"
-                  className="bg-green-600 hover:bg-green-700"
-                >
-                  <Send className="w-4 h-4" />
-                </Button>
-              </div>
+            <div className="border-t border-slate-200 p-2 flex gap-2 bg-white">
+              <Input
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                onKeyDown={(e) => { if (e.key === 'Enter') send(); }}
+                placeholder="Ask a question…"
+                className="text-sm"
+              />
+              <Button size="sm" onClick={send} className="bg-brand-800 hover:bg-brand-900">
+                <Send className="w-4 h-4" />
+              </Button>
             </div>
-          </CardContent>
-        </Card>
-      )}
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <button
+        onClick={() => setOpen((v) => !v)}
+        className="w-14 h-14 rounded-full bg-brand-gradient text-white shadow-glow flex items-center justify-center hover:scale-105 transition-transform animate-pulse-glow"
+        aria-label="Open chat"
+      >
+        {open ? <X className="w-5 h-5" /> : <MessageCircle className="w-6 h-6" />}
+      </button>
     </div>
   );
 }

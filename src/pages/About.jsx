@@ -1,230 +1,198 @@
+import { Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
+import { Target, Eye, Heart, ArrowRight, Linkedin, Mail } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import Hero from '@/components/common/Hero';
+import { fadeUp, stagger, revealOnce } from '@/lib/motion';
 
-import React from "react";
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import {
-  Target,
-  Eye,
-  Heart,
-  ArrowRight,
-  Linkedin,
-  Mail
-} from "lucide-react";
-import { Link } from "react-router-dom";
+const TEAM = [
+  {
+    name: 'Afeez A. Olagunju',
+    role: 'Founder & CEO',
+    image: 'https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/68c5f7011e8a4a27675b0091/cb8d32d4b_IMG_1187.jpg',
+    linkedin: 'https://www.linkedin.com/in/afeez-olagunju-35b811a6/',
+    email: 'olagunjuafeez@gmail.com',
+  },
+  {
+    name: 'Abe Enoch A.',
+    role: 'Chief Technology Officer',
+    image: 'https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/68c5f7011e8a4a27675b0091/8169d3f7d_AbePassport1.jpg',
+    linkedin: 'https://www.linkedin.com/in/enoch-abe-b223a118b/',
+    email: 'abeaboluwarin@gmail.com',
+  },
+  {
+    name: 'Akanfe Abidemi M.',
+    role: 'R&D Director',
+    image: 'https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/68c5f7011e8a4a27675b0091/0dec60d3c_Passport1.jpg',
+    email: 'Akanfe.am.bm@gmail.com',
+  },
+];
+
+const MILESTONES = [
+  { year: '2016', event: 'Company founded', body: 'Started with a vision to transform African tech in Lagos, Nigeria.' },
+  { year: '2019', event: 'First product launched', body: 'Rolled out our flagship health technology solution.' },
+  { year: '2021', event: '50+ clients', body: 'Served 50+ organisations across 12 countries.' },
+  { year: '2023', event: 'International expansion', body: 'Expanded operations across multiple African markets.' },
+];
+
+const VALUES = [
+  { icon: Target, title: 'Our mission', body: 'Build reliable technology that drives measurable impact in health, education and environmental sectors across African markets.', tint: 'bg-brand-50 text-brand-700' },
+  { icon: Eye, title: 'Our vision', body: 'Be the leading technology partner for organisations leveraging digital innovation for sustainable growth and social impact.', tint: 'bg-leaf-50 text-leaf-700' },
+  { icon: Heart, title: 'Our values', body: 'Excellence, innovation, integrity, collaboration and customer success guide everything we do.', tint: 'bg-rose-50 text-rose-700' },
+];
 
 export default function About() {
-  const teamMembers = [
-    {
-      name: "Afeez A. Olagunju",
-      role: "Founder & CEO",
-      image: "https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/68c5f7011e8a4a27675b0091/cb8d32d4b_IMG_1187.jpg",
-      linkedin: "https://www.linkedin.com/in/afeez-olagunju-35b811a6/",
-      email: "olagunjuafeez@gmail.com"
-    },
-    {
-      name: "Abe Enoch A.",
-      role: "Chief Technology Officer",
-      image: "https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/68c5f7011e8a4a27675b0091/8169d3f7d_AbePassport1.jpg",
-      linkedin: "https://www.linkedin.com/in/enoch-abe-b223a118b/",
-      email: "abeaboluwarin@gmail.com"
-    },
-    {
-      name: "Akanfe Abidemi M.",
-      role: "R&D Director",
-      image: "https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/68c5f7011e8a4a27675b0091/0dec60d3c_Passport1.jpg",
-      email: "Akanfe.am.bm@gmail.com"
-    }
-  ];
-
-  const milestones = [
-    { year: "2016", event: "Company Founded", description: "Started with a vision to transform African tech in Lagos, Nigeria" },
-    { year: "2019", event: "First Product Launch", description: "Launched our flagship health technology solution" },
-    { year: "2021", event: "50+ Clients", description: "Reached milestone of serving 50+ organizations across 12 countries" },
-    { year: "2023", event: "International Expansion", description: "Expanded operations to multiple African countries" }
-  ];
-
   return (
-    <div className="min-h-screen">
-      {/* Hero Section - Purple gradient background with image */}
-      <section 
-        className="relative py-32 overflow-hidden"
-        style={{
-          backgroundImage: 'url(https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=1600)',
-          backgroundSize: 'cover',
-          backgroundPosition: 'center'
-        }}
-      >
-        <div className="absolute inset-0 bg-gradient-to-r from-purple-600/90 to-indigo-600/90"></div>
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h1 className="text-5xl md:text-6xl font-bold text-white mb-6">
-            About Cereus Technologies
-          </h1>
-          <p className="text-xl text-white max-w-3xl mx-auto font-medium">
-            We're on a mission to build reliable technology solutions that drive positive change
-            in health, education, and environmental sectors across Africa.
-          </p>
+    <>
+      <Hero
+        eyebrow="About us"
+        title="Building the reliable tech backbone Africa deserves."
+        subtitle="Since 2016 we've partnered with health, education and environment leaders to ship products that move the needle."
+      />
+
+      {/* Story */}
+      <section className="section bg-white">
+        <div className="container-page grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+          <motion.div {...revealOnce} variants={stagger()}>
+            <motion.p variants={fadeUp} className="eyebrow">Our story</motion.p>
+            <motion.h2 variants={fadeUp} className="h-section mt-3">From a Lagos studio to a continent-scale team.</motion.h2>
+            <motion.div variants={fadeUp} className="mt-5 space-y-4 text-slate-600 leading-relaxed text-lg">
+              <p>Founded in 2016 in Lagos, Nigeria, Cereus Technologies began with a simple vision: create technology solutions that address real challenges in African markets.</p>
+              <p>What started as a small team of passionate technologists has grown into a leading technology company serving 50+ institutional clients across 12 countries.</p>
+              <p>Today, we're proud to have delivered over 50 successful projects, helping organizations leverage technology to achieve their goals and make a positive impact.</p>
+            </motion.div>
+          </motion.div>
+          <motion.div
+            initial={{ opacity: 0, scale: 0.96 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="relative"
+          >
+            <div className="absolute inset-0 -translate-x-3 translate-y-3 rounded-3xl bg-brand-gradient opacity-90 blur-lg" />
+            <img
+              src="https://images.unsplash.com/photo-1600880292203-757bb62b4baf?w=1000&q=80"
+              alt="Our team"
+              className="relative rounded-3xl shadow-glow w-full object-cover aspect-[4/3]"
+              loading="lazy"
+            />
+          </motion.div>
         </div>
       </section>
 
-      {/* Our Story */}
-      <section className="py-20 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            <div>
-              <h2 className="text-4xl font-bold text-gray-900 mb-6">Our Story</h2>
-              <p className="text-lg text-gray-700 mb-4 font-medium">
-                Founded in 2016 in Lagos, Nigeria, Cereus Technologies began with a simple yet powerful vision: 
-                to create technology solutions that address real challenges in African markets.
-              </p>
-              <p className="text-lg text-gray-700 mb-4 font-medium">
-                What started as a small team of passionate technologists has grown into a 
-                leading technology company serving 50+ institutional clients across 12 countries.
-              </p>
-              <p className="text-lg text-gray-700 font-medium">
-                Today, we're proud to have delivered over 50 successful projects, helping 
-                organizations leverage technology to achieve their goals and make a positive impact.
-              </p>
-            </div>
-            <div>
-              <img
-                src="https://images.unsplash.com/photo-1600880292203-757bb62b4baf?w=800"
-                alt="Our Team"
-                className="rounded-lg shadow-lg"
-              />
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Mission, Vision, Values */}
-      <section className="py-20 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <Card className="text-center border-2 hover:border-purple-900 hover:shadow-lg transition-all">
-              <CardContent className="pt-8">
-                <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Target className="w-8 h-8 text-purple-900" />
-                </div>
-                <h3 className="text-2xl font-bold mb-4 text-gray-900">Our Mission</h3>
-                <p className="text-gray-700 font-medium">
-                  To build reliable technology solutions that drive measurable impact in health, 
-                  education, and environmental sectors across African markets.
-                </p>
-              </CardContent>
-            </Card>
-
-            <Card className="text-center border-2 hover:border-green-600 hover:shadow-lg transition-all">
-              <CardContent className="pt-8">
-                <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Eye className="w-8 h-8 text-green-600" />
-                </div>
-                <h3 className="text-2xl font-bold mb-4 text-gray-900">Our Vision</h3>
-                <p className="text-gray-700 font-medium">
-                  To be the leading technology partner for organizations seeking to leverage 
-                  digital innovation for sustainable growth and social impact.
-                </p>
-              </CardContent>
-            </Card>
-
-            <Card className="text-center border-2 hover:border-purple-900 hover:shadow-lg transition-all">
-              <CardContent className="pt-8">
-                <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Heart className="w-8 h-8 text-purple-900" />
-                </div>
-                <h3 className="text-2xl font-bold mb-4 text-gray-900">Our Values</h3>
-                <p className="text-gray-700 font-medium">
-                  Excellence, Innovation, Integrity, Collaboration, and Customer Success guide 
-                  everything we do as we build solutions that matter.
-                </p>
-              </CardContent>
-            </Card>
-          </div>
+      {/* Mission / Vision / Values */}
+      <section className="section bg-slate-50/60">
+        <div className="container-page">
+          <motion.div variants={stagger()} {...revealOnce} className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {VALUES.map(({ icon: Icon, title, body, tint }) => (
+              <motion.div key={title} variants={fadeUp}>
+                <Card className="h-full lift text-center border border-slate-200">
+                  <CardContent className="p-8">
+                    <div className={`w-16 h-16 mx-auto rounded-full ${tint} flex items-center justify-center mb-5`}>
+                      <Icon className="w-8 h-8" />
+                    </div>
+                    <h3 className="font-display text-2xl font-bold text-brand-900 mb-3">{title}</h3>
+                    <p className="text-slate-600 leading-relaxed">{body}</p>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            ))}
+          </motion.div>
         </div>
       </section>
 
       {/* Timeline */}
-      <section className="py-20 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-4xl font-bold text-center text-gray-900 mb-16">Our Journey</h2>
-          <div className="space-y-8">
-            {milestones.map((milestone, index) => (
-              <div key={index} className="flex items-center gap-6">
-                <div className="w-24 h-24 bg-purple-100 rounded-full flex items-center justify-center flex-shrink-0">
-                  <div className="text-2xl font-bold text-purple-900">{milestone.year}</div>
-                </div>
-                <Card className="flex-1 border-2 hover:border-purple-900 hover:shadow-lg transition-all">
-                  <CardContent className="py-6">
-                    <h3 className="text-xl font-bold mb-2 text-gray-900">{milestone.event}</h3>
-                    <p className="text-gray-700 font-medium">{milestone.description}</p>
-                  </CardContent>
-                </Card>
-              </div>
-            ))}
+      <section className="section bg-white">
+        <div className="container-page max-w-4xl">
+          <div className="text-center mb-14">
+            <p className="eyebrow">Our journey</p>
+            <h2 className="h-section mt-3">Milestones we're proud of.</h2>
+          </div>
+          <div className="relative">
+            <div className="absolute left-[38px] md:left-1/2 md:-translate-x-1/2 top-0 bottom-0 w-px bg-gradient-to-b from-brand-200 via-brand-400 to-leaf-400" />
+            <motion.ol variants={stagger()} {...revealOnce} className="space-y-8">
+              {MILESTONES.map((m, i) => (
+                <motion.li key={m.year} variants={fadeUp} className="relative pl-24 md:pl-0 md:grid md:grid-cols-2 md:gap-10 md:items-center">
+                  <div className={`absolute left-0 md:relative md:col-span-1 flex items-center ${i % 2 === 0 ? 'md:justify-end md:pr-10' : 'md:order-2 md:pl-10'}`}>
+                    <div className="w-20 h-20 rounded-2xl bg-brand-gradient text-white flex items-center justify-center font-display font-bold text-xl shadow-glow ring-4 ring-white z-10">
+                      {m.year}
+                    </div>
+                  </div>
+                  <div className={i % 2 === 0 ? 'md:pl-10' : 'md:order-1 md:text-right md:pr-10'}>
+                    <Card className="border border-slate-200 lift">
+                      <CardContent className="p-5">
+                        <h3 className="font-display text-xl font-bold text-brand-900">{m.event}</h3>
+                        <p className="text-slate-600 mt-1">{m.body}</p>
+                      </CardContent>
+                    </Card>
+                  </div>
+                </motion.li>
+              ))}
+            </motion.ol>
           </div>
         </div>
       </section>
 
-      {/* Leadership Team */}
-      <section className="py-20 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">Meet Our Leadership Team</h2>
-            <p className="text-xl text-gray-700 font-medium">
-              Experienced professionals driving innovation and excellence
-            </p>
+      {/* Team */}
+      <section className="section bg-slate-50/60">
+        <div className="container-page">
+          <div className="text-center mb-14">
+            <p className="eyebrow">The team</p>
+            <h2 className="h-section mt-3">People shipping the roadmap.</h2>
           </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {teamMembers.map((member, index) => (
-              <Card key={index} className="text-center border-2 hover:border-purple-900 hover:shadow-lg transition-all">
-                <CardContent className="pt-6">
-                  <img
-                    src={member.image}
-                    alt={member.name}
-                    className="w-32 h-32 rounded-full mx-auto mb-4 object-cover"
-                  />
-                  <h3 className="text-xl font-bold mb-1 text-gray-900">{member.name}</h3>
-                  <p className="text-gray-700 mb-4 font-medium">{member.role}</p>
-                  <div className="flex justify-center gap-2">
-                    {member.linkedin && (
-                      <a href={member.linkedin} target="_blank" rel="noopener noreferrer">
-                        <Button size="sm" variant="outline" className="border-purple-900 text-purple-900 hover:bg-purple-900 hover:text-white">
-                          <Linkedin className="w-4 h-4 mr-2" />
-                          LinkedIn
+          <motion.div variants={stagger()} {...revealOnce} className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {TEAM.map((m) => (
+              <motion.div key={m.name} variants={fadeUp}>
+                <Card className="lift text-center border border-slate-200 group overflow-hidden">
+                  <div className="h-40 bg-brand-gradient relative">
+                    <div className="hero-grid absolute inset-0 opacity-40" />
+                  </div>
+                  <CardContent className="pt-0 -mt-14 pb-6">
+                    <img
+                      src={m.image}
+                      alt={m.name}
+                      className="w-28 h-28 rounded-full mx-auto object-cover ring-4 ring-white shadow-lg group-hover:scale-105 transition-transform"
+                    />
+                    <h3 className="mt-4 font-display text-xl font-bold text-brand-900">{m.name}</h3>
+                    <p className="text-slate-600 mb-4">{m.role}</p>
+                    <div className="flex justify-center gap-2">
+                      {m.linkedin && (
+                        <a href={m.linkedin} target="_blank" rel="noopener noreferrer">
+                          <Button size="sm" variant="outline" className="border-brand-200 text-brand-700 hover:bg-brand-50">
+                            <Linkedin className="w-4 h-4 mr-1.5" /> LinkedIn
+                          </Button>
+                        </a>
+                      )}
+                      <a href={`mailto:${m.email}`}>
+                        <Button size="sm" variant="outline" className="border-brand-200 text-brand-700 hover:bg-brand-50">
+                          <Mail className="w-4 h-4 mr-1.5" /> Email
                         </Button>
                       </a>
-                    )}
-                    <a href={`mailto:${member.email}`}>
-                      <Button size="sm" variant="outline" className="border-purple-900 text-purple-900 hover:bg-purple-900 hover:text-white">
-                        <Mail className="w-4 h-4 mr-2" />
-                        Email
-                      </Button>
-                    </a>
-                  </div>
-                </CardContent>
-              </Card>
+                    </div>
+                  </CardContent>
+                </Card>
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
         </div>
       </section>
 
       {/* CTA */}
-      <section className="py-20 bg-gradient-to-r from-purple-900 to-indigo-900 text-white">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-4xl font-bold text-white mb-6">
-            Want to Join Our Team?
-          </h2>
-          <p className="text-xl text-white mb-8 font-medium">
-            We're always looking for talented individuals who share our passion for innovation
+      <section className="relative overflow-hidden bg-brand-radial text-white">
+        <div className="hero-grid absolute inset-0 opacity-40" />
+        <div className="container-page relative py-20 text-center">
+          <h2 className="font-display text-4xl md:text-5xl font-bold text-white">Want to join us?</h2>
+          <p className="mt-4 text-white/70 max-w-xl mx-auto text-lg">
+            We're always looking for talented people who share our passion for shipping useful software.
           </p>
-          <Link to="/careers">
-            <Button size="lg" className="bg-green-600 hover:bg-green-700 text-white font-semibold">
-              View Open Positions
-              <ArrowRight className="ml-2 w-5 h-5" />
+          <Link to="/careers" className="inline-block mt-8">
+            <Button size="lg" className="bg-leaf-500 hover:bg-leaf-600 text-white font-semibold shadow-glow-green">
+              View open positions <ArrowRight className="ml-2 w-5 h-5" />
             </Button>
           </Link>
         </div>
       </section>
-    </div>
+    </>
   );
 }

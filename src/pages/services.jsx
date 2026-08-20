@@ -1,261 +1,150 @@
-
-import React from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import { Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import {
-  Code,
-  Users,
-  Lightbulb,
-  Settings,
-  ArrowRight,
-  CheckCircle,
-  Target,
-  Zap,
-  BrainCircuit
-} from "lucide-react";
-import { Link } from "react-router-dom";
+  Code, Users, Lightbulb, Settings, ArrowRight, CheckCircle,
+  Target, Zap, BrainCircuit,
+} from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import Hero from '@/components/common/Hero';
+import { fadeUp, stagger, revealOnce } from '@/lib/motion';
+
+const SERVICES = [
+  { icon: Code, title: 'Custom software development', body: 'End-to-end product engineering tailored to your business needs.', features: ['Web & mobile applications', 'Enterprise integrations', 'API development', 'Cloud-native architecture'] },
+  { icon: BrainCircuit, title: 'AI & machine learning', body: 'Automate processes, extract insights from unstructured data.', features: ['Predictive analytics', 'NLP & document understanding', 'Computer vision', 'Intelligent workflows'] },
+  { icon: Users, title: 'Digital transformation consulting', body: 'Strategic guidance for the entire modernisation journey.', features: ['Technology strategy', 'Process optimisation', 'Change management', 'Digital roadmap planning'] },
+  { icon: Settings, title: 'IT support & maintenance', body: 'Comprehensive support to keep systems running smoothly.', features: ['24/7 technical support', 'System monitoring', 'Patch management', 'Performance tuning'] },
+  { icon: Lightbulb, title: 'Product innovation', body: 'From concept to launch, we help you build things users love.', features: ['Product strategy', 'UX/UI design', 'MVP development', 'Market testing'] },
+  { icon: Target, title: 'Technology training', body: 'Level up your team through custom curricula and workshops.', features: ['Custom training programs', 'Workshops & bootcamps', 'Online courses', 'Certification paths'] },
+];
+
+const PROCESS = [
+  { step: '01', title: 'Discovery', body: 'Deep-dive workshops to understand your business, users and constraints.' },
+  { step: '02', title: 'Planning', body: 'Detailed scope, milestones and success metrics — before we write a line of code.' },
+  { step: '03', title: 'Execution', body: 'Weekly demos, agile sprints and transparent progress reporting.' },
+  { step: '04', title: 'Delivery', body: 'Deployment, training and handover — with a runbook you can operate.' },
+  { step: '05', title: 'Support', body: 'Ongoing maintenance, optimisation and roadmap iteration.' },
+];
 
 export default function Services() {
-  const services = [
-    {
-      icon: Code,
-      title: "Custom Software Development",
-      description: "End-to-end software development services tailored to your specific business needs.",
-      features: [
-        "Web & Mobile Applications",
-        "Enterprise Solutions",
-        "API Development & Integration",
-        "Cloud-Native Applications"
-      ],
-      color: "from-blue-500 to-cyan-500"
-    },
-    {
-      icon: BrainCircuit,
-      title: "AI & Machine Learning Solutions",
-      description: "Leverage the power of AI to automate processes and gain insights from your data.",
-      features: [
-        "Predictive Analytics",
-        "Natural Language Processing",
-        "Computer Vision",
-        "Intelligent Automation"
-      ],
-      color: "from-purple-500 to-pink-500"
-    },
-    {
-      icon: Users,
-      title: "Digital Transformation Consulting",
-      description: "Strategic guidance to help organizations navigate their digital transformation journey.",
-      features: [
-        "Technology Strategy",
-        "Process Optimization",
-        "Change Management",
-        "Digital Roadmap Planning"
-      ],
-      color: "from-green-500 to-teal-500"
-    },
-    {
-      icon: Settings,
-      title: "IT Support & Maintenance",
-      description: "Comprehensive support services to keep your systems running smoothly.",
-      features: [
-        "24/7 Technical Support",
-        "System Monitoring",
-        "Regular Updates & Patches",
-        "Performance Optimization"
-      ],
-      color: "from-orange-500 to-red-500"
-    },
-    {
-      icon: Lightbulb,
-      title: "Product Innovation",
-      description: "From concept to launch, we help you build innovative products that users love.",
-      features: [
-        "Product Strategy",
-        "UX/UI Design",
-        "MVP Development",
-        "Market Testing"
-      ],
-      color: "from-yellow-500 to-orange-500"
-    },
-    {
-      icon: Target,
-      title: "Technology Training",
-      description: "Empower your team with the skills they need to succeed in the digital age.",
-      features: [
-        "Custom Training Programs",
-        "Workshops & Bootcamps",
-        "Online Courses",
-        "Certification Programs"
-      ],
-      color: "from-indigo-500 to-purple-500"
-    }
-  ];
-
-  const process = [
-    {
-      step: "1",
-      title: "Discovery",
-      description: "We start by understanding your business, challenges, and goals through detailed consultations."
-    },
-    {
-      step: "2",
-      title: "Planning",
-      description: "We develop a comprehensive strategy and roadmap tailored to your specific needs."
-    },
-    {
-      step: "3",
-      title: "Execution",
-      description: "Our expert team brings your solution to life using agile methodologies and best practices."
-    },
-    {
-      step: "4",
-      title: "Delivery",
-      description: "We deploy your solution, provide training, and ensure smooth adoption."
-    },
-    {
-      step: "5",
-      title: "Support",
-      description: "Ongoing maintenance, updates, and optimization to ensure long-term success."
-    }
-  ];
-
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Hero Section */}
-      <div 
-        className="relative overflow-hidden"
-        style={{
-          backgroundImage: 'url(https://images.unsplash.com/photo-1553877522-43269d4ea984?w=1600)',
-          backgroundSize: 'cover',
-          backgroundPosition: 'center'
-        }}
-      >
-        <div className="absolute inset-0 bg-gradient-to-r from-blue-600/90 to-purple-600/90"></div>
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 text-center">
-          <h1 className="text-5xl font-bold mb-6 text-white">Our Services</h1>
-          <p className="text-xl text-white max-w-3xl mx-auto">
-            Comprehensive technology solutions to help your business thrive in the digital age
-          </p>
-        </div>
-      </div>
+    <>
+      <Hero
+        eyebrow="Services"
+        title="Full-stack partners for your next product."
+        subtitle="From strategy to shipped software — bring us in for the phase you need or for the whole journey."
+      />
 
-      {/* Services Grid */}
-      <section className="py-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {services.map((service, index) => (
-              <Card key={index} className="group hover:shadow-xl transition-all duration-300">
-                <CardHeader>
-                  <div className={`w-12 h-12 bg-gradient-to-r ${service.color} rounded-lg flex items-center justify-center mb-4`}>
-                    <service.icon className="w-6 h-6 text-white" />
-                  </div>
-                  <CardTitle className="text-xl group-hover:text-blue-600 transition-colors">
-                    {service.title}
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-gray-600 mb-4">{service.description}</p>
-                  <ul className="space-y-2">
-                    {service.features.map((feature, idx) => (
-                      <li key={idx} className="flex items-start">
-                        <CheckCircle className="w-5 h-5 text-green-500 mr-2 flex-shrink-0 mt-0.5" />
-                        <span className="text-sm text-gray-700">{feature}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </CardContent>
-              </Card>
+      {/* Services grid */}
+      <section className="section bg-white">
+        <div className="container-page">
+          <motion.div variants={stagger()} {...revealOnce} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {SERVICES.map(({ icon: Icon, title, body, features }) => (
+              <motion.div key={title} variants={fadeUp}>
+                <Card className="group h-full lift border border-slate-200 hover:border-brand-200 relative overflow-hidden">
+                  <div className="pointer-events-none absolute -top-20 -right-20 w-52 h-52 rounded-full bg-brand-500/5 group-hover:bg-brand-500/10 transition-colors blur-3xl" />
+                  <CardContent className="relative p-7">
+                    <div className="w-12 h-12 rounded-xl bg-brand-gradient text-white flex items-center justify-center mb-5 shadow-glow">
+                      <Icon className="w-6 h-6" />
+                    </div>
+                    <h3 className="font-display text-xl font-bold text-brand-900 group-hover:text-brand-700 transition-colors">{title}</h3>
+                    <p className="text-slate-600 mt-2">{body}</p>
+                    <ul className="mt-4 space-y-2">
+                      {features.map((f) => (
+                        <li key={f} className="flex items-start gap-2 text-sm text-slate-700">
+                          <CheckCircle className="w-4 h-4 text-leaf-600 mt-0.5 flex-shrink-0" />
+                          <span>{f}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </CardContent>
+                </Card>
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
         </div>
       </section>
 
-      {/* Our Process */}
-      <section className="py-20 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">Our Process</h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              A proven methodology that ensures successful project delivery
-            </p>
+      {/* Process */}
+      <section className="section bg-slate-50/60">
+        <div className="container-page">
+          <div className="text-center max-w-2xl mx-auto mb-14">
+            <p className="eyebrow">How we work</p>
+            <h2 className="h-section mt-3">A proven, five-step delivery playbook.</h2>
           </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-5 gap-8">
-            {process.map((item, index) => (
-              <div key={index} className="text-center">
-                <div className="w-16 h-16 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-2xl font-bold mx-auto mb-4">
-                  {item.step}
+          <motion.div variants={stagger()} {...revealOnce} className="grid grid-cols-2 md:grid-cols-5 gap-4">
+            {PROCESS.map((p) => (
+              <motion.div key={p.step} variants={fadeUp} className="text-center">
+                <div className="w-16 h-16 mx-auto rounded-2xl bg-white ring-1 ring-brand-100 text-brand-800 font-display text-xl font-bold flex items-center justify-center shadow-card">
+                  {p.step}
                 </div>
-                <h3 className="text-lg font-semibold mb-2">{item.title}</h3>
-                <p className="text-sm text-gray-600">{item.description}</p>
-              </div>
+                <h3 className="mt-4 font-display font-semibold text-brand-900">{p.title}</h3>
+                <p className="text-sm text-slate-600 mt-1 leading-relaxed">{p.body}</p>
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
         </div>
       </section>
 
-      {/* Why Choose Us */}
-      <section className="py-20 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            <div>
-              <h2 className="text-4xl font-bold text-gray-900 mb-6">Why Choose Our Services?</h2>
-              <div className="space-y-6">
-                <div className="flex items-start">
-                  <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center mr-4 flex-shrink-0">
-                    <Zap className="w-5 h-5 text-blue-600" />
-                  </div>
-                  <div>
-                    <h3 className="text-lg font-semibold mb-2">Fast Turnaround</h3>
-                    <p className="text-gray-600">Agile development process ensures quick delivery without compromising quality.</p>
-                  </div>
-                </div>
-                <div className="flex items-start">
-                  <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center mr-4 flex-shrink-0">
-                    <Target className="w-5 h-5 text-green-600" />
-                  </div>
-                  <div>
-                    <h3 className="text-lg font-semibold mb-2">Results-Driven</h3>
-                    <p className="text-gray-600">We focus on measurable outcomes that align with your business objectives.</p>
-                  </div>
-                </div>
-                <div className="flex items-start">
-                  <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center mr-4 flex-shrink-0">
-                    <Users className="w-5 h-5 text-purple-600" />
-                  </div>
-                  <div>
-                    <h3 className="text-lg font-semibold mb-2">Expert Team</h3>
-                    <p className="text-gray-600">Work with experienced professionals who understand your industry.</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div>
-              <img
-                src="https://images.unsplash.com/photo-1552664730-d307ca884978?w=800"
-                alt="Our Team"
-                className="rounded-lg shadow-lg"
-              />
-            </div>
-          </div>
+      {/* Why us */}
+      <section className="section bg-white">
+        <div className="container-page grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+          <motion.div {...revealOnce} variants={stagger()}>
+            <motion.p variants={fadeUp} className="eyebrow">Why choose us</motion.p>
+            <motion.h2 variants={fadeUp} className="h-section mt-3">Fast, focused, and technically deep.</motion.h2>
+            <motion.div variants={fadeUp} className="space-y-6 mt-6">
+              <Bullet icon={Zap} title="Fast turnaround" body="Agile sprints and weekly demos — with predictable ship dates." tint="bg-brand-50 text-brand-700" />
+              <Bullet icon={Target} title="Results-driven" body="Every engagement anchored on measurable business outcomes." tint="bg-leaf-50 text-leaf-700" />
+              <Bullet icon={Users} title="Expert team" body="Multi-disciplinary specialists across engineering, design and research." tint="bg-rose-50 text-rose-700" />
+            </motion.div>
+          </motion.div>
+          <motion.div
+            initial={{ opacity: 0, scale: 0.96 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="relative"
+          >
+            <div className="absolute inset-0 -translate-x-3 translate-y-3 rounded-3xl bg-brand-gradient opacity-90 blur-lg" />
+            <img
+              src="https://images.unsplash.com/photo-1552664730-d307ca884978?w=1000&q=80"
+              alt="Our team collaborating"
+              className="relative rounded-3xl shadow-glow w-full object-cover aspect-[4/3]"
+              loading="lazy"
+            />
+          </motion.div>
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="py-20 bg-gradient-to-r from-blue-600 to-purple-600 text-white">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-4xl font-bold mb-6">Ready to Get Started?</h2>
-          <p className="text-xl text-blue-100 mb-8">
-            Let's discuss how our services can help transform your business
+      {/* CTA */}
+      <section className="relative overflow-hidden bg-brand-radial text-white">
+        <div className="hero-grid absolute inset-0 opacity-40" />
+        <div className="container-page relative py-20 text-center">
+          <h2 className="font-display text-4xl md:text-5xl font-bold">Ready to get started?</h2>
+          <p className="mt-4 text-white/70 max-w-xl mx-auto text-lg">
+            Let's talk through your goals and turn them into a working plan.
           </p>
-          <Link to="/contact">
-            <Button size="lg" className="bg-white text-blue-600 hover:bg-gray-100">
-              Schedule a Consultation
-              <ArrowRight className="ml-2 w-5 h-5" />
+          <Link to="/contact" className="inline-block mt-8">
+            <Button size="lg" className="bg-white text-brand-900 hover:bg-white/90 font-semibold shadow-glow-green">
+              Schedule a consultation <ArrowRight className="ml-2 w-5 h-5" />
             </Button>
           </Link>
         </div>
       </section>
+    </>
+  );
+}
+
+function Bullet({ icon: Icon, title, body, tint }) {
+  return (
+    <div className="flex items-start gap-4">
+      <div className={`w-11 h-11 rounded-xl ${tint} flex items-center justify-center flex-shrink-0`}>
+        <Icon className="w-5 h-5" />
+      </div>
+      <div>
+        <h3 className="font-display font-semibold text-brand-900 text-lg">{title}</h3>
+        <p className="text-slate-600 mt-1">{body}</p>
+      </div>
     </div>
   );
 }

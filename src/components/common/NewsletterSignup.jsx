@@ -1,88 +1,71 @@
+import { useState } from 'react';
+import { Loader2, CheckCircle } from 'lucide-react';
+import { toast } from 'sonner';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { api } from '@/lib/api';
 
-import React, { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { NewsletterSubscriber } from "@/entities/NewsletterSubscriber";
-import { CheckCircle, Loader2 } from "lucide-react";
-
-export default function NewsletterSignup({ className = "" }) {
-  const [email, setEmail] = useState("");
-  const [firstName, setFirstName] = useState("");
+export default function NewsletterSignup({ className = '' }) {
+  const [email, setEmail] = useState('');
+  const [firstName, setFirstName] = useState('');
   const [loading, setLoading] = useState(false);
-  const [success, setSuccess] = useState(false);
-  const [error, setError] = useState("");
+  const [done, setDone] = useState(false);
 
-  const handleSubmit = async (e) => {
+  const submit = async (e) => {
     e.preventDefault();
+    if (!email) return;
     setLoading(true);
-    setError("");
-
     try {
-      await NewsletterSubscriber.create({
+      await api.submissions.newsletter({
         email,
-        first_name: firstName,
+        first_name: firstName || null,
         source: window.location.pathname,
-        interests: ["Product Updates", "Monthly Insights"]
       });
-      
-      setSuccess(true);
-      setEmail("");
-      setFirstName("");
-      
-      // Reset success message after 5 seconds
-      setTimeout(() => setSuccess(false), 5000);
+      setDone(true);
+      setEmail('');
+      setFirstName('');
+      toast.success('Thanks! You are on the list.');
+      setTimeout(() => setDone(false), 5000);
     } catch (err) {
-      setError("Failed to subscribe. Please try again.");
+      toast.error(err.message || 'Could not subscribe — try again.');
     } finally {
       setLoading(false);
     }
   };
 
-  if (success) {
+  if (done) {
     return (
-      <div className="flex items-center space-x-2 text-green-400">
+      <div className="flex items-center gap-2 text-leaf-300 text-sm">
         <CheckCircle className="w-5 h-5" />
-        <span className="text-sm">Thanks! Please check your email to confirm.</span>
+        <span>Subscribed — check your inbox.</span>
       </div>
     );
   }
 
   return (
-    <form onSubmit={handleSubmit} className={`space-y-3 ${className}`}>
+    <form onSubmit={submit} className={`space-y-3 ${className}`}>
       <Input
-        type="text"
         placeholder="First name (optional)"
         value={firstName}
         onChange={(e) => setFirstName(e.target.value)}
-        className="bg-gray-900 border-gray-700 text-white placeholder-gray-400 focus:border-green-500"
+        className="bg-white/10 border-white/20 text-white placeholder-white/60 focus-visible:border-leaf-400"
       />
       <Input
         type="email"
-        placeholder="Your email address"
+        required
+        placeholder="you@company.com"
         value={email}
         onChange={(e) => setEmail(e.target.value)}
-        required
-        className="bg-gray-900 border-gray-700 text-white placeholder-gray-400 focus:border-green-500"
+        className="bg-white/10 border-white/20 text-white placeholder-white/60 focus-visible:border-leaf-400"
       />
-      <Button 
-        type="submit" 
+      <Button
+        type="submit"
         disabled={loading}
-        className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold"
+        className="w-full bg-leaf-600 hover:bg-leaf-700 text-white font-semibold"
       >
-        {loading ? (
-          <>
-            <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-            Subscribing...
-          </>
-        ) : (
-          "Subscribe"
-        )}
+        {loading ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Subscribing…</> : 'Subscribe'}
       </Button>
-      {error && <p className="text-red-400 text-sm font-medium">{error}</p>}
-      
-      <p className="text-xs text-gray-400">
-        We respect your privacy. You can unsubscribe at any time.
-      </p>
+      <p className="text-xs text-white/50">We respect your privacy. Unsubscribe any time.</p>
     </form>
   );
 }
