@@ -46,12 +46,15 @@ export const api = {
     get: () => request(`/site-content`),
   },
   // ─── public writes (form submissions) ─────
+  // All five forms POST to the same endpoint with a `kind` query param;
+  // the server consolidated to a single handler to stay under Vercel Hobby's
+  // 12-function limit.
   submissions: {
-    contact: (payload) => request(`/submissions/contact`, { method: 'POST', body: payload }),
-    newsletter: (payload) => request(`/submissions/newsletter`, { method: 'POST', body: payload }),
-    career: (payload) => request(`/submissions/career-application`, { method: 'POST', body: payload }),
-    student: (payload) => request(`/submissions/student`, { method: 'POST', body: payload }),
-    instructor: (payload) => request(`/submissions/instructor`, { method: 'POST', body: payload }),
+    contact:    (payload) => request(`/submissions?kind=contact`,    { method: 'POST', body: payload }),
+    newsletter: (payload) => request(`/submissions?kind=newsletter`, { method: 'POST', body: payload }),
+    career:     (payload) => request(`/submissions?kind=career`,     { method: 'POST', body: payload }),
+    student:    (payload) => request(`/submissions?kind=student`,    { method: 'POST', body: payload }),
+    instructor: (payload) => request(`/submissions?kind=instructor`, { method: 'POST', body: payload }),
   },
 };
 
