@@ -70,9 +70,9 @@ const DEFAULT_SITE_CONTENT = {
   },
 };
 
-// ─── Products (from the Cereus portfolio) ───────────────────────────────
-// `demo_url` is left null wherever the deployed URL wasn't handed to me —
-// update via the admin UI at /admin/products once each app has a public URL.
+// ─── Products (Cereus portfolio, live URLs) ─────────────────────────────
+// Every entry below has a real deployed URL. Edit copy or add screenshots
+// via /admin/products — the seed re-runs are UPSERTs so edits survive.
 const PRODUCTS = [
   {
     slug: 'cereus-lens', name: 'Cereus Lens', category: 'Education', status: 'Active',
@@ -84,79 +84,91 @@ const PRODUCTS = [
     features: ['AI art interpretation', '3D bring-to-life scene', 'Mathematical structure explainer', 'Community voting on the maths read', 'Fully offline-capable PWA'],
     use_cases: ['Museum and gallery apps', 'Art-history classrooms', 'Curriculum-linked field trips'],
     tech_stack: ['Next.js 15', 'TypeScript', 'Tailwind v4', 'Clerk', 'Serwist'],
-    demo_url: null, sort_order: 1,
+    demo_url: 'https://lens.cereustechnologies.com', sort_order: 1,
   },
   {
-    slug: 'tb-detect', name: 'TB Detect', category: 'Health', status: 'Active',
-    short_description: 'Chest X-ray screening for pulmonary tuberculosis using a DenseNet121 baseline and a hybrid CNN + ViT novelty model.',
-    primary_benefit: 'Screens a chest X-ray for TB in seconds — decision-support for clinicians in resource-constrained settings.',
+    slug: 'skinaid', name: 'SkinAid', category: 'Health', status: 'Active',
+    short_description: 'AI-assisted skin screening for everyday peace of mind — snap a photo, get a plain-English preliminary assessment.',
+    primary_benefit: 'A private, always-available first look at any skin concern — never a substitute for a dermatologist, always a nudge to see one when it matters.',
     detailed_description:
-      'A two-service monorepo: a FastAPI backend that wraps trained PyTorch models, and a Next.js frontend for the clinical UI. Both baseline and novelty models are exposed side-by-side so clinicians can compare and calibrate.',
-    tags: ['Health', 'Deep Learning', 'PyTorch', 'CNN', 'ViT'],
-    features: ['DenseNet121 baseline model', 'Hybrid CNN + Vision Transformer', 'Side-by-side model comparison', 'FastAPI inference backend', 'Clinical UI on Next.js'],
-    use_cases: ['Primary-care TB screening', 'Radiology triage in low-resource settings', 'Public-health cohort screening'],
-    tech_stack: ['PyTorch', 'FastAPI', 'Next.js', 'Railway'],
-    demo_url: null, sort_order: 2,
+      'SkinAid lets anyone take or upload a photo of a skin concern, get a plain-English preliminary assessment powered by Anthropic\'s Claude vision model, and keep a private history of past checks. Symptom notes ("itchy for three days", "spreading") are woven into every read so the assessment reflects the whole picture.',
+    tags: ['Health', 'Vision AI', 'Dermatology'],
+    features: ['Claude-powered image assessment', 'Symptom-note context', 'Private per-user history', 'Clear "see a doctor" prompts', 'Mobile-first web app'],
+    use_cases: ['Everyday skin peace-of-mind', 'Rural triage before travelling to a clinic', 'Longitudinal tracking of a healing area'],
+    tech_stack: ['Next.js', 'Clerk', 'Neon Postgres', 'Anthropic API'],
+    demo_url: 'https://skinaid.cereustechnologies.com', sort_order: 2,
+  },
+  {
+    slug: 'radioact', name: 'RadioAct', category: 'Health', status: 'Active',
+    short_description: 'A patient-first radiology triage app — AI-assisted reads on chest, limb X-rays and CT slices, confirmed by a clinician.',
+    primary_benefit: 'Patient uploads a scan, gets an AI-assisted read privately, sends it to a clinician for expert review — nothing becomes a confirmed outcome until a clinician reviews it.',
+    detailed_description:
+      'RadioAct is a workflow product, not just an image analyser. Built on the Ontomorph digital-twin platform, it runs an AI-assisted analysis (Anthropic first, Groq second, deterministic demo analyser as fallback) then hands the case to a clinician queue. The clinician sees a live handoff list, opens an inspector for context, and confirms reviewed findings back to the patient\'s history.',
+    tags: ['Health', 'Radiology', 'Triage', 'Vision AI'],
+    features: ['Multi-modality upload (X-ray, CT)', 'Symptom & context capture', 'Multi-provider AI pipeline with graceful fallback', 'Live clinician review queue', 'Confirmed-outcome audit trail'],
+    use_cases: ['Rural clinics awaiting a radiologist', 'Second-opinion services', 'Telemedicine platforms'],
+    tech_stack: ['Next.js', 'Anthropic', 'Groq', 'Ontomorph'],
+    demo_url: 'https://radioact.app', sort_order: 3,
   },
   {
     slug: 'jmhs', name: 'Jude Mental Health Society', category: 'Health', status: 'Active',
     short_description: 'Website and admin platform for JMHS — an independent Nigerian mental-health advocacy initiative.',
     primary_benefit: 'One home for emergency support, resources, monthly lectures, professional directory, community forum and the JMHS national writing competition.',
     detailed_description:
-      'Public site covers homepage, About, Emergency Support, Resource Centre, Monthly Lecture Series, JMHS National Writing Competition, Professional Support Directory, Community Forum, Announcements, Contact and WhatsApp community. A Clerk-gated role-based admin dashboard manages announcements, lectures, resources, directory approvals and competition submissions.',
+      'Public site covers homepage, About, Emergency Support, Resource Centre, Monthly Lecture Series, JMHS National Writing Competition, Professional Support Directory, Community Forum, Announcements, Contact and a WhatsApp community. A Clerk-gated role-based admin dashboard manages announcements, lectures, resources, directory approvals and competition submissions.',
     tags: ['Mental Health', 'Non-profit', 'Community'],
     features: ['Emergency support directory', 'Monthly lecture series manager', 'Writing competition workflow', 'Professional-support approvals', 'Community forum'],
     use_cases: ['Mental-health non-profits', 'Community advocacy groups', 'University student wellness programs'],
     tech_stack: ['Next.js', 'Clerk', 'Neon Postgres', 'Tailwind'],
-    demo_url: null, sort_order: 3,
+    demo_url: 'https://judementalhealthsociety.org', sort_order: 4,
   },
   {
-    slug: 'linguadepth', name: 'LinguaDepth', category: 'Education', status: 'Active',
-    short_description: 'An adaptive English-learning platform for Nigerian university students — Duolingo-style lessons plus an ML proficiency classifier and an LLM tutor.',
-    primary_benefit: 'Curriculum adapts weekly to each learner\'s measured proficiency instead of a one-size-fits-all track.',
+    slug: 'mindbloom', name: 'MindBloom', category: 'Education', status: 'Active',
+    short_description: 'AI-powered children\'s story-writing web app — generate child-safe stories, save them, revisit them in a polished library.',
+    primary_benefit: 'Parents, teachers and young readers get a limitless bedtime-story engine with a library they own.',
     detailed_description:
-      'A Duolingo-inspired lesson engine backed by an ML proficiency classifier that steers each learner\'s curriculum, and an LLM tutor that grades written answers, validates spoken answers and powers a conversational practice chatbox. Built for real Nigerian university cohorts.',
-    tags: ['Education', 'AI Tutor', 'Adaptive Learning', 'NLP'],
-    features: ['Adaptive lesson graph', 'ML proficiency classifier', 'LLM writing grader', 'Speech-answer validation', 'Conversational practice chat'],
-    use_cases: ['University language departments', 'Corporate English programs', 'Continuing-education platforms'],
-    tech_stack: ['Next.js', 'FastAPI', 'PyTorch', 'OpenAI', 'Postgres'],
-    demo_url: null, sort_order: 4,
+      'MindBloom is a fully owned Next.js 14 application that generates child-safe stories via Groq and Llama 3.3 70B, saves them to Supabase, and surfaces them through a polished story library. Every story is scoped to its author, ready for reading-aloud sessions or classroom prompts.',
+    tags: ['Education', 'AI Stories', 'Kids', 'Reading'],
+    features: ['AI story generator with age filters', 'Personal story library', 'Read-aloud friendly layout', 'Simple sign-in for families and classes', 'Save + revisit workflow'],
+    use_cases: ['Bedtime stories at home', 'Primary-school reading corners', 'Literacy after-school programs'],
+    tech_stack: ['Next.js 14', 'Groq', 'Llama 3.3', 'Supabase'],
+    demo_url: 'https://mindbloom.cereustechnologies.com', sort_order: 5,
   },
   {
-    slug: 'coursefit', name: 'CourseFit', category: 'Education', status: 'Active',
-    short_description: 'A machine-learning course recommender for Nigerian UTME candidates across all nine JAMB faculties.',
-    primary_benefit: 'Turns raw JAMB profile data into a ranked, explainable shortlist of realistic university courses.',
+    slug: 'sculptform', name: 'Sculptform', category: 'Education', status: 'Active',
+    short_description: 'AI-native form and survey builder — describe the form you want, get a ready-to-share one back.',
+    primary_benefit: 'Skip the drag-and-drop grind — describe your form in plain English and start collecting responses in minutes.',
     detailed_description:
-      'CourseFit combines a trained recommendation model with a lightweight web experience for UTME candidates and their counsellors. The `apps/web` and `apps/api` services consume a pre-trained model artefact rather than regenerating it, so predictions are stable across releases.',
-    tags: ['Education', 'ML', 'Recommender', 'JAMB'],
-    features: ['Cross-faculty recommender', 'Explainable rankings', 'Counsellor dashboard', 'Batch imports for schools'],
-    use_cases: ['UTME candidates', 'Secondary-school counsellors', 'Admissions consultancies'],
-    tech_stack: ['Python ML', 'FastAPI', 'Next.js'],
-    demo_url: null, sort_order: 5,
+      'Sculptform is an AI-native form and survey builder. Instead of dragging form fields onto a canvas, describe your form in natural language: "a five-question wellbeing check-in for university students, with a required consent step". Sculptform assembles the fields, wires the logic, and gives you a shareable link.',
+    tags: ['Productivity', 'AI', 'Forms', 'Surveys'],
+    features: ['Natural-language form generation', 'Shareable public links', 'Response collection dashboard', 'Conditional logic'],
+    use_cases: ['University research consent forms', 'Community-programme surveys', 'Internal team check-ins'],
+    tech_stack: ['Next.js', 'Tailwind', 'OpenAI'],
+    demo_url: 'https://sculptform.live', sort_order: 6,
   },
   {
-    slug: 'rezultal', name: 'Rezultal', category: 'Education', status: 'Active',
-    short_description: 'Intelligent academic-results processing and analytics portal — GPA/CGPA computation, role-based dashboards and LLM-generated plain-language insights.',
-    primary_benefit: 'Automates GPA/CGPA computation and hands lecturers and administrators plain-language insights on top of every aggregate.',
+    slug: 'glotta', name: 'Glotta', category: 'Education', status: 'Active',
+    short_description: 'Instant text and voice translation for every purchase — 50+ languages including 30+ African languages.',
+    primary_benefit: 'Retailers and shoppers cross language barriers in real time — type, speak, or listen your way through any exchange.',
     detailed_description:
-      'A results portal originally built for Oduduwa University. Handles spreadsheet and manual score entry, computes GPA/CGPA, exposes role-based dashboards, and layers LLM-generated commentary over pre-computed aggregates — the LLM never sees raw scores or performs arithmetic, keeping every displayed number deterministic.',
-    tags: ['Education', 'Analytics', 'LLM', 'Universities'],
-    features: ['Spreadsheet + manual score entry', 'GPA / CGPA engine', 'Role-based dashboards', 'LLM narrative over aggregates', 'Audit trail'],
-    use_cases: ['Universities and polytechnics', 'Faculty exam offices', 'Programme accreditation reviews'],
-    tech_stack: ['Next.js', 'Drizzle', 'Neon Postgres', 'Tailwind'],
-    demo_url: null, sort_order: 6,
+      'Glotta is a modern web app that lets retailers and shoppers cross language barriers in real time. Type a phrase or speak it, choose a target language, and Glotta translates, saves the exchange to a personal history, and can even read the result out loud. Ships with a light/dark UI, secure authentication and a persistent per-user history backed by PostgreSQL.',
+    tags: ['Education', 'Translation', 'Voice', 'African Languages'],
+    features: ['50+ languages including 30+ African languages', 'Voice-in translation via AssemblyAI', 'Text-to-speech playback via ElevenLabs', 'Persistent per-user history', 'Email/password + JWT auth'],
+    use_cases: ['Retailers serving multi-lingual customers', 'Field workers in multi-lingual communities', 'Language-learning practice'],
+    tech_stack: ['Next.js', 'PostgreSQL', 'AssemblyAI', 'ElevenLabs'],
+    demo_url: 'https://glotta.cereustechnologies.com', sort_order: 7,
   },
   {
-    slug: 'floodwarn', name: 'FloodWarn', category: 'Environment', status: 'Active',
-    short_description: 'A flood-risk classification and decision-support app for Ibadan metropolis — search any area and get an immediate visual susceptibility rating.',
-    primary_benefit: 'A thesis-grade methodology delivered as a production-grade product — planners see risk, not spreadsheets.',
+    slug: 'okawe', name: 'Okawe', category: 'Education', status: 'Active',
+    short_description: 'A modern e-library platform for African readers — discover, save and read titles across devices.',
+    primary_benefit: 'A single place to browse, borrow and read — with a shelf that follows you across devices.',
     detailed_description:
-      'Search or geolocate any area in the Ibadan metropolis and get an immediate, visual and explained flood-susceptibility rating. Every rating is backed by a documented methodology, so the same analysis holds up in a planning meeting and a peer-reviewed paper.',
-    tags: ['Environment', 'GIS', 'ML', 'Climate'],
-    features: ['Search-by-area risk lookup', 'Geolocated live rating', 'Explained susceptibility factors', 'Map-first UI', 'Exportable methodology reports'],
-    use_cases: ['Municipal urban-planning offices', 'Environmental NGOs', 'Disaster-response coordinators'],
-    tech_stack: ['Next.js', 'MapLibre', 'PostGIS', 'Python ML'],
-    demo_url: null, sort_order: 7,
+      'Okawe (Yoruba for "reader") is an e-library web app built on Next.js. Readers browse a curated catalogue, save titles to a personal shelf, and pick up where they left off across devices.',
+    tags: ['Education', 'Library', 'Reading'],
+    features: ['Curated catalogue', 'Personal shelf', 'Cross-device reading progress', 'Mobile-first reading UI'],
+    use_cases: ['Public and community libraries', 'University reading lists', 'Book clubs and reading circles'],
+    tech_stack: ['Next.js', 'PostgreSQL'],
+    demo_url: 'https://okawe.vercel.app', sort_order: 8,
   },
   {
     slug: 'plantid', name: 'PlantiD', category: 'Environment', status: 'Active',
@@ -168,71 +180,74 @@ const PRODUCTS = [
     features: ['Photo-to-species identification', 'Care-plan suggestions', 'Conversational plant assistant', 'Personal plant log', 'History across devices'],
     use_cases: ['Home gardeners and hobbyists', 'Agricultural extension officers', 'Botanical citizen-science projects'],
     tech_stack: ['Next.js', 'Clerk', 'Neon + Drizzle', 'Anthropic API'],
-    demo_url: null, sort_order: 8,
-  },
-  {
-    slug: 'coco-corrosion', name: 'CoCo — Corrosion Console', category: 'Environment', status: 'Active',
-    short_description: 'Explainable ML console for CO₂ (sweet) internal pipeline corrosion — seven sliders, live risk, and per-feature explanations.',
-    primary_benefit: 'Engineers see not just a predicted corrosion rate, but which inputs are pushing the number up or down.',
-    detailed_description:
-      'Seven sliders for the model\'s real input features, each flagged the moment it drifts out of a healthy range. Predictions and SHAP-style explanations render live in the console so an integrity engineer can reason about a pipeline segment in seconds.',
-    tags: ['Environment', 'Industrial', 'Explainable AI'],
-    features: ['Live corrosion-rate prediction', 'Per-feature explanations', 'Range validation on every input', 'Scenario save + share', 'Vercel-ready deploy'],
-    use_cases: ['Oil-and-gas integrity teams', 'Corrosion-monitoring consultancies', 'University research groups'],
-    tech_stack: ['Next.js 14', 'Python ML', 'Vercel'],
-    demo_url: null, sort_order: 9,
+    demo_url: 'https://plantid.cereustechnologies.com', sort_order: 9,
   },
 ];
 
-// ─── Insights (drawn from real project work) ────────────────────────────
+// ─── Insights (drawn from real project work on live apps) ───────────────
 const INSIGHTS = [
   {
     slug: 'building-cereus-lens-camera-first-pwa',
     title: 'Camera-first, no shutter button: how we designed Cereus Lens',
     category: 'Product', excerpt: 'Removing the shutter changed how people used the app — and what we had to build behind it.',
     author: 'Afeez Olagunju', reading_time: 5,
-    content: '# The camera view IS the home screen\n\nMost mobile apps hide the camera behind a screen, then behind a button. Cereus Lens flips that: you open the app and you are already looking through the lens.\n\n## Why we removed the shutter\n\nUsers were opening the app, framing the artwork, then hesitating — trying to figure out **when** to shoot. Once the shutter was gone and each of *Interpret*, *Bring to Life* and *Explore the Math* silently grabbed the current frame as part of firing that action, hesitation vanished.\n\n## What we had to build for that\n\n- A rock-solid preview pipeline that never drops frames while an action fires\n- An offline queue for actions the network isn\'t ready to serve\n- A first-run flow that teaches the three actions without a single modal\n\n## What we shipped\n\nA mobile-first PWA on Next.js 15, Clerk for auth, and Serwist for the service-worker layer. The interpretation, 3D bring-to-life, and math explainer are three thin calls behind one shared camera surface.',
+    featured_image: 'https://images.unsplash.com/photo-1520453803296-c39eabe2dab4?w=1200&q=80',
+    content: '# The camera view IS the home screen\n\nMost mobile apps hide the camera behind a screen, then behind a button. [Cereus Lens](https://lens.cereustechnologies.com) flips that: you open the app and you are already looking through the lens.\n\n## Why we removed the shutter\n\nUsers were opening the app, framing the artwork, then hesitating — trying to figure out **when** to shoot. Once the shutter was gone and each of *Interpret*, *Bring to Life* and *Explore the Math* silently grabbed the current frame as part of firing that action, hesitation vanished.\n\n## What we had to build for that\n\n- A rock-solid preview pipeline that never drops frames while an action fires\n- An offline queue for actions the network isn\'t ready to serve\n- A first-run flow that teaches the three actions without a single modal\n\n## What we shipped\n\nA mobile-first PWA on Next.js 15, Clerk for auth, and Serwist for the service-worker layer. The interpretation, 3D bring-to-life, and math explainer are three thin calls behind one shared camera surface.',
     tags: ['product', 'ai', 'pwa'], published: true,
   },
   {
-    slug: 'shipping-tb-detect',
-    title: 'Shipping TB Detect: comparing a DenseNet baseline with a hybrid CNN+ViT',
-    category: 'Engineering', excerpt: 'Two models, one clinical UI, and the honest engineering trade-offs of releasing both.',
-    author: 'Enoch Abe', reading_time: 6,
-    content: '# Two models, one screen\n\nTB Detect wraps two chest-X-ray models — a DenseNet121 baseline and a hybrid CNN+ViT — behind a single FastAPI service, and shows them side-by-side in a Next.js clinical UI.\n\n## Why both\n\nClinicians care about two things: agreement and disagreement. When the two models agree, confidence is easy to communicate. When they disagree, the case gets flagged for radiologist review.\n\n## Deployment shape\n\n- FastAPI + PyTorch on Railway\n- Next.js frontend on the same platform\n- Deterministic image preprocessing pinned in both directions\n\n## What we learned\n\nCalibration matters more than raw accuracy for triage. We spent the last two weeks purely on threshold tuning — and it changed the tool from *"clever"* to *"trusted"*.',
-    tags: ['health', 'ml', 'engineering'], published: true,
+    slug: 'skinaid-triage-not-diagnosis',
+    title: 'Building SkinAid: triage-grade UX, not diagnosis-grade claims',
+    category: 'Health', excerpt: 'A skin-screening tool people actually use requires humility, private history, and a firm nudge to see a real dermatologist.',
+    author: 'Enoch Abe', reading_time: 5,
+    featured_image: 'https://images.unsplash.com/photo-1584515933487-779824d29309?w=1200&q=80',
+    content: '# Three commitments we made before writing a line of code\n\n[SkinAid](https://skinaid.cereustechnologies.com) is a triage app, not a diagnosis app. That distinction shaped every product decision.\n\n## 1. Every reading includes context\n\nA photo alone is a partial story. Symptom notes — "itchy for three days", "spreading" — go straight into the model prompt so the read reflects the whole picture.\n\n## 2. Private history stays private\n\nEvery user\'s photos and past checks live in a per-user table, gated by Clerk. There is no admin backdoor to browse patient photos, and there never will be.\n\n## 3. Refer up, always\n\nEvery non-trivial finding ends with a clear "see a dermatologist" prompt. The value of the tool is *lowering the friction of that next step*, not replacing it.\n\n## Under the hood\n\nNext.js, Clerk, Neon Postgres, Anthropic Claude vision. A small stack that scales to zero, so the marginal cost of running it stays close to nothing.',
+    tags: ['health', 'ai', 'privacy'], published: true,
   },
   {
-    slug: 'linguadepth-ml-plus-llm',
-    title: 'LinguaDepth: the case for an ML proficiency layer under your LLM tutor',
-    category: 'AI', excerpt: 'Why we don\'t let the LLM guess how good a learner is — a small classifier does it, deterministically.',
-    author: 'Afeez Olagunju', reading_time: 6,
-    content: '# LLMs are great tutors, bad routers\n\nAsk a large language model to estimate a learner\'s proficiency and it will confidently guess. In LinguaDepth we separated the two jobs: a small ML classifier ranks the learner into a proficiency band, and the LLM only handles instruction and grading **within** that band.\n\n## Why separate\n\n- **Determinism.** Two learners with the same input get the same track.\n- **Cost.** A 40ms classifier call is cheaper than an LLM round-trip.\n- **Explainability.** The band the learner sits in is a visible artefact — not something buried in a prompt.\n\n## What the LLM still does\n\nGrading written answers, validating spoken answers, and driving a conversational practice chatbox. Those are exactly the jobs LLMs are good at.\n\n## Takeaway\n\nCombine narrow models for control-flow decisions with LLMs for open-ended interactions. You get a system you can debug **and** an experience learners enjoy.',
-    tags: ['ai', 'education', 'ml'], published: true,
+    slug: 'radioact-clinician-loop',
+    title: 'RadioAct: the AI is the intern, the clinician is the doctor',
+    category: 'Health', excerpt: 'Why our radiology triage app was designed around a clinician queue, not an autonomous read.',
+    author: 'Akanfe Abidemi', reading_time: 6,
+    featured_image: 'https://images.unsplash.com/photo-1530026405186-ed1f139313f8?w=1200&q=80',
+    content: '# The workflow is the product\n\n[RadioAct](https://radioact.app) started as an image analyser. It ended as a workflow product — because that is what the clinicians we spoke to actually needed.\n\n## The loop\n\n1. Patient uploads a chest X-ray, limb X-ray, or CT slice.\n2. AI-assisted analysis runs (Anthropic first, Groq second, deterministic demo analyser as fallback so the app never *blank-screens*).\n3. Case appears in the clinician\'s live handoff queue.\n4. Clinician opens the inspector, confirms findings, and the confirmed result writes back to the patient\'s history.\n\nNothing becomes a confirmed outcome until a clinician reviews it — a rule we enforced in the schema, not just in the UI.\n\n## What we learned\n\nA graceful analyser fallback matters more than a shiny model choice. The moment RadioAct kept working during a Groq outage was the moment three clinicians started trusting the tool with their inbox.',
+    tags: ['health', 'workflow', 'ai'], published: true,
   },
   {
-    slug: 'coco-explainable-corrosion',
-    title: 'Explainable ML for CO₂ pipeline corrosion',
-    category: 'Engineering', excerpt: 'Predictions are cheap. Explanations are what make an integrity engineer trust the tool.',
-    author: 'Akanfe Abidemi', reading_time: 5,
-    content: '# Seven sliders and one number\n\nCoCo (Corrosion Console) predicts CO₂ (sweet) internal pipeline corrosion from seven engineering inputs. The number is easy — the science of *"how did we get here?"* is what we spent our time on.\n\n## Per-feature explanations\n\nEvery slider is flagged the moment it drifts out of a healthy range. Predictions render live and each feature\'s contribution is broken out so an engineer can reason about a pipeline segment in seconds, not hours.\n\n## Where the value lands\n\nNot in the raw prediction, but in the confidence it gives operations to intervene early. That is the difference between predictive maintenance as a slogan and predictive maintenance as a workflow.',
-    tags: ['environment', 'ml', 'industrial'], published: true,
+    slug: 'glotta-african-languages-first',
+    title: 'Glotta and the case for African-language-first translation',
+    category: 'Product', excerpt: '30+ African languages in the picker, voice-in via AssemblyAI, TTS via ElevenLabs — and why we shipped it in that order.',
+    author: 'Afeez Olagunju', reading_time: 5,
+    featured_image: 'https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?w=1200&q=80',
+    content: '# A translator built for the exchange, not the essay\n\nMost translation apps optimise for the paragraph. [Glotta](https://glotta.cereustechnologies.com) optimises for the *exchange*: a customer, a retailer, and three seconds to make sense of each other.\n\n## African languages, first-class\n\nYoruba, Igbo, Hausa, Swahili, isiZulu — 30+ African languages sit next to the usual world set in the picker. Not buried under a submenu.\n\n## Voice in, voice out\n\n- **In** — record from the microphone, transcribe with AssemblyAI, then translate.\n- **Out** — play the translated result through ElevenLabs, with a browser SpeechSynthesis fallback so playback keeps working when the API is offline.\n\n## Persistence\n\nEvery exchange saves to your account, so you can go back and reuse a phrase that worked yesterday. Small, but the reason retailers we tested with kept opening the app.',
+    tags: ['product', 'translation', 'africa'], published: true,
   },
   {
-    slug: 'floodwarn-thesis-to-product',
-    title: 'From thesis to product: FloodWarn for Ibadan',
-    category: 'Case study', excerpt: 'What changes when a research methodology has to survive a planning meeting.',
-    author: 'Afeez Olagunju', reading_time: 4,
-    content: '# Same maths. Very different UX.\n\nFloodWarn started as a thesis: a flood-risk susceptibility model for the Ibadan metropolis. Turning it into something a municipal planner would actually open every morning meant re-thinking almost every surface.\n\n## Three shifts that mattered\n\n1. **Search first, map second.** Planners type an area name; the map animates to it.\n2. **Explain the rating, not the algorithm.** *"High risk because of X, Y, Z"* — not *"weighted sum with logistic head"*.\n3. **Export what you see.** Every rating exports as a one-page methodology PDF you can staple to a council brief.\n\n## Result\n\nSame model. Very different willingness to use it.',
-    tags: ['environment', 'case-study', 'product'], published: true,
+    slug: 'sculptform-forms-by-conversation',
+    title: 'Sculptform: forms by description, not drag-and-drop',
+    category: 'AI', excerpt: 'What we learned building an AI-native form builder — and why the sharpest wins were in the schema, not the model.',
+    author: 'Enoch Abe', reading_time: 4,
+    featured_image: 'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=1200&q=80',
+    content: '# The model is easy, the schema is hard\n\n[Sculptform](https://sculptform.live) turns a sentence — *"a five-question wellbeing check-in for university students, with a required consent step"* — into a shareable form.\n\nThe language model call was a one-day job. The three-week job was designing a form schema that survives:\n\n- **Iteration** — you edit the description, and only the affected fields change, not the whole form.\n- **Sharing** — every form has a stable public URL with a versioned response bucket underneath.\n- **Analysis** — responses land in a shape that answers questions, not just stores strings.\n\n## Why users kept coming back\n\nNot the AI generation. The *"share this"* button. Every product decision after we saw that in the analytics revolved around lowering the friction between "I want a form" and "someone filled it in".',
+    tags: ['ai', 'product', 'forms'], published: true,
   },
   {
     slug: 'why-we-picked-neon-and-clerk',
     title: 'Why our stack keeps landing on Neon + Clerk + Vercel',
     category: 'Engineering', excerpt: 'A pragmatic walk-through of the choices we keep re-making across the Cereus product lineup.',
     author: 'Enoch Abe', reading_time: 4,
-    content: '# Same stack, different products\n\nCereus Lens, LinguaDepth, PlantiD, Rezultal, JMHS, this very site — all of them run the same stack. Not because we are lazy: because each choice keeps earning its keep.\n\n## Neon Postgres\n\n- HTTP driver that survives serverless cold starts\n- Branching per PR — production data shape, safe writes\n- SQL, not a bespoke DSL\n\n## Clerk\n\n- Sign-in, sessions and org roles out of the box\n- Server-side token verification that plays nicely with Vercel Functions\n- Escape hatches when we need a custom flow\n\n## Vercel\n\n- Static + serverless in one deploy\n- Env-var UX we actually like\n- Preview URLs on every push\n\n## What we would swap for scale\n\nHonestly? Not much yet. When someone hits their first genuinely-hot table we\'ll reach for a read replica or a queue — until then this trio is the sweet spot.',
+    featured_image: 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=1200&q=80',
+    content: '# Same stack, different products\n\nCereus Lens, SkinAid, PlantiD, JMHS, Mindbloom, Glotta, this very site — all of them run the same stack. Not because we are lazy: because each choice keeps earning its keep.\n\n## Neon Postgres\n\n- HTTP driver that survives serverless cold starts\n- Branching per PR — production data shape, safe writes\n- SQL, not a bespoke DSL\n\n## Clerk\n\n- Sign-in, sessions and org roles out of the box\n- Server-side token verification that plays nicely with Vercel Functions\n- Escape hatches when we need a custom flow\n\n## Vercel\n\n- Static + serverless in one deploy\n- Env-var UX we actually like\n- Preview URLs on every push\n\n## What we would swap for scale\n\nHonestly? Not much yet. When someone hits their first genuinely-hot table we\'ll reach for a read replica or a queue — until then this trio is the sweet spot.',
     tags: ['engineering', 'stack'], published: true,
+  },
+  {
+    slug: 'mindbloom-child-safe-generation',
+    title: 'MindBloom: what "child-safe" means in a story-generation app',
+    category: 'AI', excerpt: 'A generation pipeline for kids has to say no confidently, not scarily — here is how we tuned MindBloom for that.',
+    author: 'Afeez Olagunju', reading_time: 5,
+    featured_image: 'https://images.unsplash.com/photo-1512820790803-83ca734da794?w=1200&q=80',
+    content: '# Safety without the scary rails\n\n[MindBloom](https://mindbloom.cereustechnologies.com) generates children\'s stories with Groq and Llama 3.3 70B. It has to decline unsafe prompts, but a scary "I cannot help with that" screen is the wrong answer for a five-year-old with a parent leaning over their shoulder.\n\n## Three tuning knobs\n\n1. **Prompt scaffolding** — the story request template gently reframes tricky prompts before they reach the model.\n2. **Age filter** — the story\'s age band is a first-class input, and the model gets that band up front.\n3. **Fallback voices** — when the model declines, the app returns a gentle placeholder story with a nudge for a grown-up to help pick a new prompt.\n\n## Storage that respects the family\n\nStories save per-account to Supabase, and the story library UI is deliberately small — parents and teachers should feel in control of what is on the shelf.',
+    tags: ['ai', 'kids', 'safety'], published: true,
   },
 ];
 
@@ -276,11 +291,23 @@ async function seed() {
   await ensureSchema();
   console.log('✓ schema ensured');
 
-  // Wipe the earlier demo rows so repeat-seed doesn't leave stale content.
-  const demoSlugs = ['clinicsync', 'lumen-lms', 'terra-monitor'];
-  const demoInsights = ['shipping-software-in-lagos', 'why-we-chose-neon'];
-  await sql`DELETE FROM products WHERE slug = ANY(${demoSlugs})`;
-  await sql`DELETE FROM insights WHERE slug = ANY(${demoInsights})`;
+  // Wipe stale product & insight rows from earlier seeds so repeat-runs
+  // don't leave orphaned content behind (fictional demo apps, projects
+  // that never got a live URL, insights that reference removed apps).
+  const staleProductSlugs = [
+    // v1 fictional demos
+    'clinicsync', 'lumen-lms', 'terra-monitor',
+    // v2 real apps without a public URL — kept in the codebase, removed
+    // from the site catalogue until a demo URL exists for each.
+    'tb-detect', 'linguadepth', 'coursefit', 'rezultal', 'floodwarn', 'coco-corrosion',
+  ];
+  const staleInsightSlugs = [
+    'shipping-software-in-lagos', 'why-we-chose-neon',
+    'shipping-tb-detect', 'linguadepth-ml-plus-llm',
+    'coco-explainable-corrosion', 'floodwarn-thesis-to-product',
+  ];
+  await sql`DELETE FROM products WHERE slug = ANY(${staleProductSlugs})`;
+  await sql`DELETE FROM insights WHERE slug = ANY(${staleInsightSlugs})`;
 
   // Site content — always upsert
   await sql`INSERT INTO site_content (id, data) VALUES (1, ${JSON.stringify(DEFAULT_SITE_CONTENT)}::jsonb)
