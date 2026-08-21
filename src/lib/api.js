@@ -67,6 +67,7 @@ export const admin = {
     remove: (id, token) => request(`/products/${id}`, { method: 'DELETE', token }),
   },
   insights: {
+    listAll: (token) => request(`/insights?includeUnpublished=1`, { token }),
     create: (payload, token) => request(`/insights`, { method: 'POST', body: payload, token }),
     update: (id, payload, token) =>
       request(`/insights/${id}`, { method: 'PATCH', body: payload, token }),

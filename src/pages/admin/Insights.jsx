@@ -31,9 +31,9 @@ export default function AdminInsights() {
     setLoading(true);
     try {
       const token = await getToken();
-      const r = await fetch('/api/insights?includeUnpublished=1', {
-        headers: { Authorization: `Bearer ${token}` },
-      }).then((r) => r.json());
+      // Use the shared helper so a 4xx/5xx throws (was silent before,
+      // which made auth failures look like "no articles").
+      const r = await admin.insights.listAll(token);
       setItems(r.items || []);
     } catch (e) { toast.error(e.message); }
     finally { setLoading(false); }
