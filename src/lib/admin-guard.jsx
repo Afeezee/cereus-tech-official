@@ -14,9 +14,19 @@ export default function AdminGuard({ children }) {
         <AdminOnly>{children}</AdminOnly>
       </SignedIn>
       <SignedOut>
-        <div className="min-h-screen flex items-center justify-center bg-brand-radial p-6">
-          <div className="w-full max-w-md">
-            <SignIn routing="path" path="/admin/sign-in" signUpUrl="/admin/sign-in" fallbackRedirectUrl="/admin" />
+        <div className="min-h-screen flex items-center justify-center bg-brand-radial p-6 relative overflow-hidden">
+          <div className="hero-grid absolute inset-0 opacity-30" />
+          <div className="absolute -top-24 -left-24 blob bg-brand-500 w-[420px] h-[420px] animate-float" />
+          <div className="absolute -bottom-32 -right-24 blob bg-leaf-500 w-[420px] h-[420px]" style={{ animationDelay: '1.5s' }} />
+          <div className="w-full max-w-md relative">
+            <div className="text-center mb-6 text-white">
+              <img src="/logo.png" alt="Cereus" className="w-14 h-14 rounded-2xl mx-auto mb-3 shadow-glow" />
+              <h1 className="font-display text-2xl font-bold">Cereus Admin</h1>
+              <p className="text-white/70 text-sm">Sign in to manage content.</p>
+            </div>
+            {/* No `routing` / `path` — Clerk renders in "virtual" mode so the
+                form appears at any URL under /admin/*. */}
+            <SignIn signUpUrl="#" forceRedirectUrl="/admin" fallbackRedirectUrl="/admin" />
           </div>
         </div>
       </SignedOut>

@@ -39,7 +39,9 @@ export default function Layout() {
         <div className="container-page">
           <div className="flex items-center justify-between h-18 py-3">
             <Link to="/" className="flex items-center gap-2 group">
-              <span className="inline-block w-9 h-9 rounded-xl bg-brand-gradient shadow-glow group-hover:scale-105 transition-transform" />
+              <span className="inline-block w-10 h-10 rounded-xl overflow-hidden shadow-glow group-hover:scale-105 transition-transform">
+                <img src="/logo.png" alt="" className="w-full h-full object-cover" />
+              </span>
               <span className="font-display text-lg md:text-xl font-bold text-brand-900">
                 {brandName}
               </span>
@@ -145,7 +147,9 @@ function Footer({ content, brandName }) {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
           <div className="space-y-4">
             <Link to="/" className="inline-flex items-center gap-2">
-              <span className="inline-block w-9 h-9 rounded-xl bg-white/10 backdrop-blur border border-white/20" />
+              <span className="inline-block w-10 h-10 rounded-xl overflow-hidden ring-1 ring-white/20">
+                <img src="/logo.png" alt="" className="w-full h-full object-cover" />
+              </span>
               <span className="font-display text-lg font-bold text-white">{brandName}</span>
             </Link>
             <p className="text-sm text-white/70">

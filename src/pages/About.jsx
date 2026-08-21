@@ -145,14 +145,17 @@ export default function About() {
             {TEAM.map((m) => (
               <motion.div key={m.name} variants={fadeUp}>
                 <Card className="lift text-center border border-slate-200 group overflow-hidden">
-                  <div className="h-40 bg-brand-gradient relative">
+                  {/* Banner sits BEHIND everything — explicit z-0 fixes an issue
+                      where the relative-positioned banner was painting over the
+                      portrait on some browsers. */}
+                  <div className="h-40 bg-brand-gradient relative z-0">
                     <div className="hero-grid absolute inset-0 opacity-40" />
                   </div>
-                  <CardContent className="pt-0 -mt-14 pb-6">
+                  <CardContent className="relative z-10 pt-0 -mt-14 pb-6">
                     <img
                       src={m.image}
                       alt={m.name}
-                      className="w-28 h-28 rounded-full mx-auto object-cover ring-4 ring-white shadow-lg group-hover:scale-105 transition-transform"
+                      className="relative z-10 w-28 h-28 rounded-full mx-auto object-cover object-top ring-4 ring-white shadow-lg group-hover:scale-105 transition-transform"
                     />
                     <h3 className="mt-4 font-display text-xl font-bold text-brand-900">{m.name}</h3>
                     <p className="text-slate-600 mb-4">{m.role}</p>
