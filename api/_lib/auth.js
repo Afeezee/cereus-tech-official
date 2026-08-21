@@ -4,7 +4,20 @@
 import { createClerkClient } from '@clerk/backend';
 
 const secretKey = process.env.CLERK_SECRET_KEY;
-const clerk = secretKey ? createClerkClient({ secretKey }) : null;
+
+// Guard against a common footgun: pasting the publishable key into
+// CLERK_SECRET_KEY. Both start with "pk_"/"sk_" respectively — a pk_ value
+// here silently breaks every admin write with an opaque "Invalid token"
+// error, so we surface it up front instead.
+const secretLooksValid = !!secretKey && /^sk_(test|live)_/.test(secretKey);
+if (secretKey && !secretLooksValid) {
+  // eslint-disable-next-line no-console
+  console.error(
+    '[auth] CLERK_SECRET_KEY does not look like a secret key (expected sk_test_… or sk_live_…). ' +
+    'Copy the "Secret keys" value from Clerk Dashboard → API Keys.'
+  );
+}
+const clerk = secretLooksValid ? createClerkClient({ secretKey }) : null;
 
 const adminEmails = (process.env.ADMIN_EMAILS || '')
   .split(',')
@@ -14,7 +27,11 @@ const adminEmails = (process.env.ADMIN_EMAILS || '')
 // Returns the user record when authorized, or throws with a status.
 export async function requireAdmin(req) {
   if (!clerk) {
-    const err = new Error('Clerk is not configured on the server');
+    const err = new Error(
+      secretKey
+        ? 'CLERK_SECRET_KEY must start with sk_test_ or sk_live_ (looks like a publishable key was pasted here).'
+        : 'CLERK_SECRET_KEY is not set on the server.'
+    );
     err.status = 500;
     throw err;
   }
